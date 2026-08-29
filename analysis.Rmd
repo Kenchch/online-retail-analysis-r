@@ -1,0 +1,354 @@
+---
+title: "One year of online retail: a small, reproducible analysis in R"
+author: "See README.md for how to rebuild this document"
+output:
+  github_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+# All logic lives in R/functions.R, shared with run_analysis.R and the tests -
+# this document narrates results; it does not define its own pipeline.
+source(file.path("R", "functions.R"))
+
+# SVG figures: crisp at any zoom, text-diffable in review, and they render
+# natively in GitHub-flavoured markdown.
+knitr::opts_chunk$set(
+  echo = TRUE, message = FALSE, warning = FALSE,
+  fig.width = 8.5, fig.height = 4.2, dev = "svglite",
+  dev.args = list(bg = PAL$surface)
+)
+
+cleaned <- cleaned_lines()
+lines <- cleaned$lines
+con <- build_sqlite(lines)
+sql <- run_queries(con)
+DBI::dbDisconnect(con)
+
+span <- range(as_date(lines$invoice_ts))
+total_revenue <- sum(lines$revenue)
+```
+
+## What this is
+
+A deliberately small end-to-end analysis of the [UCI Online
+Retail](https://doi.org/10.24432/C5BW33) dataset — every transaction of a
+UK-based online giftware wholesaler/retailer from
+`r format(span[1], "%d %B %Y")` to `r format(span[2], "%d %B %Y")`. The point
+is the working style, not the dataset: documented cleaning rules with a
+reconciling audit trail, business questions answered in SQL, time series and
+customer analysis in R, and a report that rebuilds from raw data with one
+command (`Rscript run_analysis.R`).
+
+## Cleaning: every dropped row is accounted for
+
+The raw file is invoice *lines*, and it mixes real product sales with
+cancellations, postage charges, fees, and manual stock corrections. Five rules
+are applied in a fixed order; each row is counted against the first rule that
+removes it, so the audit reconciles exactly against the input.
+
+The netting rule earns its place: the two largest "orders" of the year
+(80,995 and 74,215 units) were both **cancelled within minutes** of being
+keyed in. Dropping only the credit notes — the obvious first cut — would
+leave those phantom sales in every top-product and top-customer list below;
+matching each credit note back to its sale (same customer, product, quantity
+and price) removes both sides of the pair.
+
+```{r cleaning-audit}
+knitr::kable(
+  cleaned$audit |>
+    mutate(share_of_input = percent(share_of_input, accuracy = 0.1)),
+  col.names = c("Rule (applied in order)", "Rows dropped", "Share of input"),
+  format.args = list(big.mark = ",")
+)
+```
+
+`r format(cleaned$rows_in, big.mark = ",")` raw rows become
+`r format(cleaned$rows_out, big.mark = ",")` clean sales lines
+(`r percent(1 - cleaned$rows_out / cleaned$rows_in, accuracy = 0.1)` dropped),
+worth `r label_gbp(total_revenue)` in revenue. Two caveats worth stating up
+front:
+
+- **Netting is exact-match only.** A credit note nets a sale only when
+  customer, product, quantity and price all agree; partial returns and
+  returns of pre-window sales find no match and simply drop out. Revenue is
+  therefore net of clean cancellations but still slightly *gross* of messy
+  returns.
+- **A quarter of lines have no customer ID**
+  (`r percent(mean(is.na(lines$customer_id)), accuracy = 0.1)` of clean lines
+  — guest checkouts). They stay in revenue figures but cannot be used for
+  customer-level analysis, which is therefore based on identified revenue
+  only.
+
+## Revenue over time (SQL)
+
+Monthly totals come straight from SQLite — the cleaned lines are loaded into a
+database and the business questions are answered in SQL
+([`sql/queries.sql`](sql/queries.sql)). This dataset would fit in a data frame
+comfortably; the point of the SQL layer is that these are exactly the queries
+that live in a warehouse in production, and writing them as SQL keeps them
+portable to one.
+
+```{r monthly-table}
+knitr::kable(
+  sql$monthly_summary |>
+    left_join(sql$monthly_growth |> select(month, mom_growth_pct), by = "month") |>
+    mutate(
+      revenue = label_gbp(revenue),
+      # The first month has nothing to grow from; a bare NA in a rendered
+      # table reads as an error, not an inapplicable cell.
+      mom_growth_pct = coalesce(as.character(mom_growth_pct), "—")
+    ),
+  col.names = c("Month", "Revenue", "Invoices", "Identified customers",
+                "Revenue / invoice (£)", "MoM growth (%)"),
+  format.args = list(big.mark = ",")
+)
+```
+
+```{r monthly-revenue, fig.height=4.0}
+monthly <- sql$monthly_summary |>
+  mutate(
+    month_date = as_date(paste0(month, "-01")),
+    # December 2011 stops on the 9th - nine trading days dressed up as a
+    # month would read as a collapse, so the partial month is flagged.
+    partial = month_date + months(1) - days(1) > span[2]
+  )
+
+ggplot(monthly, aes(month_date, revenue)) +
+  geom_col(aes(alpha = partial), fill = PAL$blue, width = 22, show.legend = FALSE) +
+  scale_alpha_manual(values = c(`FALSE` = 1, `TRUE` = 0.35)) +
+  geom_text(
+    data = filter(monthly, revenue == max(revenue)),
+    aes(label = label_gbp(revenue)),
+    vjust = -0.6, size = 3.2, colour = PAL$ink2
+  ) +
+  scale_y_continuous(labels = label_gbp, expand = expansion(mult = c(0, 0.12))) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b\n%Y") +
+  labs(
+    title = "Quiet for half the year, then a climb to the November peak",
+    subtitle = "Monthly revenue, cleaned sales lines. The autumn ramp starts in September; November is the year's peak.",
+    x = NULL, y = "Revenue",
+    caption = "Faded bar: December 2011 is a partial month (data ends 9 December)."
+  ) +
+  theme_retail()
+```
+
+The shape is a giftware wholesaler's year in one picture: an unremarkable
+first half, an autumn ramp as retail customers stock up for Christmas, a
+`r sql$monthly_growth |> filter(month == "2011-11") |> pull(mom_growth_pct)`%
+November jump — and a December bar that only looks like a crash because the
+data stops on the 9th (its `trading_days` column in
+[`output/monthly_growth.csv`](output/monthly_growth.csv) says the same to
+anyone reading the CSV without this caption).
+
+## The trading week
+
+```{r weekday-profile, fig.height=3.6}
+wd <- weekday_profile(lines)
+
+ggplot(wd, aes(weekday, mean_daily_revenue)) +
+  geom_col(fill = PAL$blue, width = 0.62) +
+  scale_y_continuous(labels = label_gbp, expand = expansion(mult = c(0, 0.08))) +
+  labs(
+    title = "A weekday business: revenue peaks midweek, Saturdays are dark",
+    subtitle = "Mean revenue per trading day, by weekday.",
+    x = NULL, y = "Mean daily revenue",
+    caption = "No Saturday trading appears anywhere in the data - the bar is absent, not zero."
+  ) +
+  theme_retail()
+```
+
+The peak day (`r as.character(wd$weekday[which.max(wd$mean_daily_revenue)])`)
+averages `r label_gbp(max(wd$mean_daily_revenue))` in revenue, against
+`r label_gbp(min(wd$mean_daily_revenue))` on the quietest day — consistent
+with trade (B2B) customers ordering in working hours rather than consumers
+browsing on weekends.
+
+```{r daily-rolling, fig.height=4.0}
+daily <- daily_revenue(lines)
+
+ggplot(daily, aes(day, revenue)) +
+  geom_point(colour = "#c3c2b7", size = 0.7) +
+  geom_line(aes(y = rolling_7d), colour = PAL$blue, linewidth = 0.8, na.rm = TRUE) +
+  scale_y_continuous(labels = label_gbp) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b\n%Y") +
+  labs(
+    title = "Daily revenue is noisy; the trend is not",
+    subtitle = "Grey points: daily revenue. Blue line: 7-trading-day centred rolling mean.",
+    x = NULL, y = "Daily revenue"
+  ) +
+  theme_retail()
+```
+
+Single-day spikes (a handful of very large wholesale orders) make the daily
+series jumpy; the rolling mean shows the underlying level is flat until
+August 2011 and then climbs for four straight months.
+
+## What sells, and where (SQL)
+
+```{r top-products-table}
+knitr::kable(
+  sql$top_products |> mutate(revenue = label_gbp(revenue)),
+  col.names = c("Stock code", "Description", "Revenue", "Units", "Invoices"),
+  format.args = list(big.mark = ",")
+)
+```
+
+```{r top-products, fig.height=4.4}
+top <- sql$top_products |>
+  mutate(label = stringr::str_trunc(stringr::str_to_sentence(description), 34))
+
+ggplot(top, aes(revenue, reorder(label, revenue))) +
+  geom_col(fill = PAL$blue, width = 0.62) +
+  scale_x_continuous(labels = label_gbp, expand = expansion(mult = c(0, 0.06))) +
+  labs(
+    title = paste0("Ten products out of ", comma(n_distinct(toupper(lines$stock_code))),
+                   " earn ", percent(sum(sql$top_products$revenue) / total_revenue, accuracy = 0.1),
+                   " of all revenue"),
+    subtitle = "Top 10 stock codes by revenue, grouped case-insensitively.",
+    x = "Revenue", y = NULL
+  ) +
+  theme_retail()
+```
+
+```{r countries, fig.height=3.8}
+uk_share <- sql$country_summary |>
+  filter(country == "United Kingdom") |> pull(revenue_share_pct)
+
+intl <- sql$country_summary |>
+  filter(country != "United Kingdom") |>
+  slice_max(revenue, n = 8)
+
+ggplot(intl, aes(revenue, reorder(country, revenue))) +
+  geom_col(fill = PAL$blue, width = 0.62) +
+  scale_x_continuous(labels = label_gbp, expand = expansion(mult = c(0, 0.06))) +
+  labs(
+    title = "Outside the UK, the near neighbours dominate",
+    subtitle = paste0("Top international markets by revenue. The UK itself accounts for ",
+                      uk_share, "% of all revenue."),
+    x = "Revenue", y = NULL
+  ) +
+  theme_retail()
+```
+
+This is overwhelmingly a domestic business (`r uk_share`% UK), with the
+Netherlands, Ireland, Germany and France making up most of the rest — the
+kind of context that matters before anyone proposes "growing international
+sales" off the back of one chart.
+
+## Customer concentration
+
+A *repeat* buyer here is a customer who bought on more than one calendar day
+— a same-day flurry of invoices still counts as one visit. Guest checkouts
+cannot be attributed to anyone, so this section covers identified revenue
+only.
+
+```{r repeat-table}
+knitr::kable(
+  sql$customer_repeat |> mutate(revenue = label_gbp(revenue)),
+  col.names = c("Customer type", "Identified customers", "Revenue",
+                "Share of identified revenue (%)"),
+  format.args = list(big.mark = ",")
+)
+```
+
+```{r pareto, fig.height=4.0}
+pareto <- customer_pareto(lines)
+top10_share <- pareto |> filter(customer_pct >= 0.10) |> slice(1) |> pull(revenue_share)
+
+ggplot(pareto, aes(customer_pct, revenue_share)) +
+  geom_line(colour = PAL$blue, linewidth = 0.9) +
+  geom_vline(xintercept = 0.10, colour = PAL$muted, linetype = "dashed", linewidth = 0.4) +
+  annotate(
+    "text", x = 0.115, y = 0.30, hjust = 0, size = 3.2, colour = PAL$ink2,
+    label = paste0("Top 10% of customers\n= ", percent(top10_share, accuracy = 1), " of identified revenue")
+  ) +
+  scale_x_continuous(labels = percent) +
+  scale_y_continuous(labels = percent, limits = c(0, 1)) +
+  labs(
+    title = "Revenue leans hard on a small core of customers",
+    subtitle = "Cumulative share of identified revenue by customer rank (highest-spending first).",
+    x = "Customers (ranked by spend)", y = "Cumulative revenue share",
+    caption = "Identified customers only - guest-checkout revenue cannot be attributed."
+  ) +
+  theme_retail()
+```
+
+Repeat buyers are `r percent(sql$customer_repeat$customers[sql$customer_repeat$customer_type == "repeat"] / sum(sql$customer_repeat$customers), accuracy = 1)`
+of identified customers but
+`r sql$customer_repeat$revenue_share_pct[sql$customer_repeat$customer_type == "repeat"]`%
+of identified revenue, and the top decile alone carries
+`r percent(top10_share, accuracy = 1)`. Losing a handful of key accounts
+would show up directly in the monthly numbers — concentration, not volume,
+is this retailer's real commercial risk.
+
+## A short-horizon forecast, with its caveats attached
+
+```{r forecast, fig.height=4.2}
+weekly <- weekly_revenue(lines)
+fc <- forecast_weekly(weekly, h = 4)
+
+ggplot() +
+  geom_ribbon(
+    data = fc$forecast, aes(week, ymin = lo95, ymax = hi95),
+    fill = PAL$band, alpha = 0.55
+  ) +
+  geom_ribbon(
+    data = fc$forecast, aes(week, ymin = lo80, ymax = hi80),
+    fill = PAL$band
+  ) +
+  geom_line(data = fc$history, aes(week, revenue, colour = "All trading weeks"),
+            linewidth = 0.5) +
+  geom_line(data = fc$fit_run, aes(week, revenue, colour = "Model fit window"),
+            linewidth = 0.8) +
+  geom_line(
+    data = fc$forecast, aes(week, mean, colour = "ETS forecast"),
+    linewidth = 0.8, linetype = "21"
+  ) +
+  scale_colour_manual(
+    NULL,
+    values = c("All trading weeks" = "#c3c2b7", "Model fit window" = PAL$blue,
+               "ETS forecast" = PAL$orange),
+    breaks = c("All trading weeks", "Model fit window", "ETS forecast")
+  ) +
+  scale_y_continuous(labels = label_gbp) +
+  scale_x_date(date_breaks = "2 months", date_labels = "%b %Y") +
+  labs(
+    title = "Four weeks ahead: the level holds, the uncertainty is wide",
+    subtitle = paste0("Weekly revenue with a 4-week ", fc$fit$method,
+                      " forecast; bands are 80% / 95% intervals."),
+    x = NULL, y = "Weekly revenue",
+    caption = paste0(
+      "Grey: every week the data window covers in full, including the year-end closure (near zero).\n",
+      "The model is fit only on the unbroken run of weeks after that closure; ",
+      "window-truncated edge weeks are excluded entirely."
+    )
+  ) +
+  theme_retail() +
+  theme(legend.position = c(0.17, 0.85), legend.background = element_blank())
+```
+
+Two modelling choices are doing the honest work here. The model is fit only
+on the **unbroken run of weeks after the year-end closure**: `ts()` has no
+notion of a calendar, so handing it the closure week (the grey plunge to
+near zero) or the data window's truncated edge weeks would teach the level
+a collapse that is really a holiday. And it is deliberately
+**non-seasonal**: with thirteen months of history there is exactly one
+observation of any annual pattern, so a seasonal term would be fit to
+noise. That is also this forecast's honest limitation — it projects the
+current level, and the *known* story of this business (the chart above it)
+says December falls off a Christmas cliff that a one-year series cannot
+teach a model. In production this would be the argument for pooling more
+history before forecasting, not for a fancier model on the same data.
+
+## Reproducing this document
+
+```
+Rscript R/get_data.R       # fetch + verify the raw data (sha256-pinned)
+Rscript tests/run_tests.R  # unit tests for cleaning + SQL plumbing
+Rscript run_analysis.R     # clean -> SQL -> tables -> knit this report
+```
+
+```{r session-info}
+sessionInfo()
+```

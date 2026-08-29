@@ -1,0 +1,9 @@
+# The raw data is downloaded (and sha256-verified) by R/get_data.R, never committed.
+data/raw/*
+!data/raw/.gitkeep
+
+# Local intermediates: the fingerprinted clean-data cache and the SQLite db.
+cache/
+
+# rmarkdown's local HTML preview; the committed report is analysis.md.
+analysis.html
