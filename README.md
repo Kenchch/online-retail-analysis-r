@@ -1,19 +1,16 @@
 # One year of online retail — a small, reproducible analysis in R
 
-A complete but deliberately small data analysis in R, written as a working
-sample for the **Analyst Developer | Kaiwhakawhanake Tātari** role at Stats NZ
-([job listing](https://jobs.stats.govt.nz/jobdetails/ajid/R6m48/Analyst-Developer-Kaiwhakawhanake-T-tari,19909)).
+A complete but deliberately small, reproducible data analysis in R.
 
 **Read the analysis here: [analysis.md](analysis.md)** — it renders directly
 on GitHub with all figures and tables.
 
 ## Why it looks the way it does
 
-The role is about developing, documenting and deploying analytical code to
-in-house standards, with R and SQL as the core tools. So this project is
-built like a small production pipeline rather than a notebook:
+The project uses R and SQL in a small production-style pipeline rather than a
+notebook:
 
-| The role asks for | Where it shows up here |
+| Capability | Where it shows up here |
 |---|---|
 | R development | Shared functions in [`R/functions.R`](R/functions.R); the report, the driver and the tests all call the same code |
 | SQL | Business questions answered in SQLite — aggregates and a window function in [`sql/queries.sql`](sql/queries.sql), executed from R via DBI |
