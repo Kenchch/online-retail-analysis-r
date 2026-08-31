@@ -1,5 +1,8 @@
 # One year of online retail — a small, reproducible analysis in R
 
+[![R CI](https://github.com/Kenchch/onlineretailanalysisr/actions/workflows/ci.yml/badge.svg)](https://github.com/Kenchch/onlineretailanalysisr/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A complete but deliberately small, reproducible data analysis in R.
 
 **Read the analysis here: [analysis.md](analysis.md)** — it renders directly
