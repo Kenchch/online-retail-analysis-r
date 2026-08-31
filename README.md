@@ -5,6 +5,20 @@ A complete but deliberately small, reproducible data analysis in R.
 **Read the analysis here: [analysis.md](analysis.md)** — it renders directly
 on GitHub with all figures and tables.
 
+## At a glance
+
+| Input | Audited output | Reproducibility |
+|---|---|---|
+| **541,909** invoice lines | **524,786** clean sales lines · **£9.88m** revenue | SHA-256-pinned download · fingerprinted cache · **6/6 tests** |
+
+![Monthly revenue: a flat first half followed by a steep autumn rise](analysis_files/figure-gfm/monthly-revenue-1.svg)
+
+Rebuild the complete analysis from a clean clone:
+
+```sh
+Rscript R/get_data.R && Rscript tests/run_tests.R && Rscript run_analysis.R
+```
+
 ## Why it looks the way it does
 
 The project uses R and SQL in a small production-style pipeline rather than a
