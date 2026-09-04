@@ -43,6 +43,32 @@ table. The pipeline instead nets each credit note against its matching sale
 (same customer, product, quantity, price), so both sides of a cancelled pair
 are removed and the "top products" are things the business actually sold.
 
+## Reconciliation with retail-ai-pipeline
+
+This repository and
+[`retail-ai-pipeline`](https://github.com/Kenchch/retail-ai-pipeline) use the
+same SHA-256-pinned UCI workbook but apply different accounting rules:
+
+| Bridge | Revenue |
+|---|---:|
+| Python pipeline: valid positive sales | £10,247,353.28 |
+| Matched sales removed when a credit note reverses them | −£394,233.81 |
+| Exact duplicate rows retained by this R analysis | +£24,241.34 |
+| **This analysis: cancellation-netted sales** | **£9,877,360.81** |
+
+Neither result is presented as a universal definition of revenue. The Python
+pipeline measures accepted positive invoice lines; this analysis estimates net
+sales after matching credit notes. The bridge makes that scope difference
+explicit and reproducible.
+
+## How this was built
+
+Built with AI pair-programming (Claude Code and OpenAI Codex) for drafting,
+refactoring and test scaffolding. I defined the analysis, selected the cleaning
+and credit-note rules, verified the reconciliations, and reviewed and edited the
+code. Commits where an assistant contributed code retain a `Co-Authored-By`
+trailer.
+
 ## Data
 
 [UCI Online Retail](https://doi.org/10.24432/C5BW33) (Chen, 2015, CC BY 4.0):
