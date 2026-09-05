@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='svglite' width='612.00pt' height='302.40pt' viewBox='0 0 612.00 302.40'>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='612.00pt' height='302.40pt' viewBox='0 0 612.00 302.40'>
+<g class='svglite'>
 <defs>
   <style type='text/css'><![CDATA[
     .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
@@ -12,6 +13,10 @@
     .svglite text {
       white-space: pre;
     }
+    .svglite g.glyphgroup path {
+      fill: inherit;
+      stroke: none;
+    }
   ]]></style>
 </defs>
 <rect width='100%' height='100%' style='stroke: none; fill: #FCFCFB;'/>
@@ -21,69 +26,64 @@
   </clipPath>
 </defs>
 <g clip-path='url(#cpMC4wMHw2MTIuMDB8MC4wMHwzMDIuNDA=)'>
-<rect x='0.00' y='0.00' width='612.00' height='302.40' style='stroke-width: 1.16; stroke: none; fill: #FCFCFB;' />
+<rect x='0.00' y='0.000000000000057' width='612.00' height='302.40' style='stroke-width: 1.16; stroke: none; fill: #FCFCFB;' />
 </g>
 <defs>
-  <clipPath id='cpNDkuOTV8NjA2LjAyfDM5LjcyfDI1OS43Ng=='>
-    <rect x='49.95' y='39.72' width='556.07' height='220.04' />
+  <clipPath id='cpNDkuNzJ8NjA2LjAyfDM5LjI0fDI2MC4xMg=='>
+    <rect x='49.72' y='39.24' width='556.30' height='220.88' />
   </clipPath>
 </defs>
-<g clip-path='url(#cpNDkuOTV8NjA2LjAyfDM5LjcyfDI1OS43Ng==)'>
-<rect x='49.95' y='39.72' width='556.07' height='220.04' style='stroke-width: 1.16; stroke: none; fill: #FCFCFB;' />
-<polyline points='49.95,249.76 606.02,249.76 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='49.95,208.73 606.02,208.73 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='49.95,167.71 606.02,167.71 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='49.95,126.69 606.02,126.69 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='49.95,85.67 606.02,85.67 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='49.95,44.65 606.02,44.65 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='109.37,259.76 109.37,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='186.83,259.76 186.83,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='266.93,259.76 266.93,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='347.03,259.76 347.03,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='428.43,259.76 428.43,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='508.53,259.76 508.53,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='588.62,259.76 588.62,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polygon points='553.17,60.76 562.36,56.90 571.56,53.23 580.75,49.72 580.75,194.43 571.56,190.92 562.36,187.25 553.17,183.39 ' style='stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #CDE2FB; fill-opacity: 0.55;' />
-<polyline points='553.17,60.76 562.36,56.90 571.56,53.23 580.75,49.72 ' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt;' />
-<polyline points='580.75,194.43 571.56,190.92 562.36,187.25 553.17,183.39 ' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt;' />
-<polygon points='553.17,81.98 562.36,79.46 571.56,77.06 580.75,74.77 580.75,169.39 571.56,167.09 562.36,164.69 553.17,162.17 ' style='stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #CDE2FB;' />
-<polyline points='553.17,81.98 562.36,79.46 571.56,77.06 580.75,74.77 ' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt;' />
-<polyline points='580.75,169.39 571.56,167.09 562.36,164.69 553.17,162.17 ' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt;' />
-<polyline points='75.23,126.98 84.42,166.22 93.61,214.81 102.80,249.76 111.99,197.25 121.18,178.73 130.37,195.54 139.57,200.39 148.76,200.25 157.95,207.39 167.14,192.34 176.33,190.32 185.52,198.70 194.71,197.33 203.90,187.38 213.10,190.52 222.29,174.16 231.48,200.09 240.67,190.07 249.86,196.16 259.05,216.27 268.24,194.25 277.43,166.50 286.63,164.22 295.82,184.56 305.01,202.67 314.20,163.07 323.39,173.40 332.58,197.76 341.77,195.66 350.96,180.60 360.16,195.64 369.35,173.78 378.54,176.69 387.73,182.17 396.92,180.83 406.11,178.92 415.30,184.38 424.49,189.76 433.69,173.09 442.88,158.39 452.07,117.63 461.26,165.40 470.45,126.32 479.64,165.38 488.83,141.80 498.02,152.42 507.22,130.32 516.41,104.19 525.60,97.37 534.79,127.35 543.98,123.16 ' style='stroke-width: 1.07; stroke: #C3C2B7;
+<g clip-path='url(#cpNDkuNzJ8NjA2LjAyfDM5LjI0fDI2MC4xMg==)'>
+<rect x='49.72' y='39.24' width='556.30' height='220.88' style='stroke-width: 1.16; stroke: none; fill: #FCFCFB;' />
+<polyline points='49.72,250.08 606.02,250.08 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='49.72,208.79 606.02,208.79 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='49.72,167.50 606.02,167.50 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='49.72,126.21 606.02,126.21 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='49.72,84.92 606.02,84.92 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='49.72,43.63 606.02,43.63 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='109.16,260.12 109.16,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='186.66,260.12 186.66,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='266.79,260.12 266.79,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='346.92,260.12 346.92,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='428.36,260.12 428.36,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='508.49,260.12 508.49,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='588.62,260.12 588.62,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polygon points='553.15,60.38 562.35,56.50 571.54,52.81 580.74,49.28 580.74,193.06 571.54,189.54 562.35,185.85 553.15,181.97 ' style='stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #CDE2FB; fill-opacity: 0.55;' />
+<polyline points='553.15,60.38 562.35,56.50 571.54,52.81 580.74,49.28 ' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt;' />
+<polyline points='580.74,193.06 571.54,189.54 562.35,185.85 553.15,181.97 ' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt;' />
+<polygon points='553.15,81.42 562.35,78.88 571.54,76.47 580.74,74.17 580.74,168.18 571.54,165.87 562.35,163.46 553.15,160.93 ' style='stroke-width: 0.00; stroke: none; stroke-linecap: butt; fill: #CDE2FB;' />
+<polyline points='553.15,81.42 562.35,78.88 571.54,76.47 580.74,74.17 ' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt;' />
+<polyline points='580.74,168.18 571.54,165.87 562.35,163.46 553.15,160.93 ' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt;' />
+<polyline points='75.01,126.53 84.20,165.73 93.40,214.92 102.59,250.08 111.79,197.20 120.98,182.27 130.18,195.54 139.37,200.43 148.57,200.35 157.76,207.44 166.96,192.28 176.15,190.27 185.35,197.83 194.54,197.33 203.74,187.23 212.93,190.38 222.13,174.04 231.32,199.95 240.52,190.01 249.71,193.44 258.91,216.37 268.10,194.60 277.30,165.98 286.49,163.97 295.69,184.50 304.88,202.75 314.08,162.87 323.27,173.16 332.47,197.74 341.66,195.62 350.86,180.38 360.05,195.63 369.25,173.22 378.44,176.50 387.64,182.60 396.84,180.68 406.03,178.73 415.23,184.25 424.42,189.54 433.62,172.93 442.81,158.04 452.01,117.06 461.20,165.16 470.40,128.95 479.59,162.11 488.79,141.06 497.98,152.32 507.18,129.60 516.37,103.75 525.57,96.35 534.76,126.04 543.96,122.45 ' style='stroke-width: 1.07; stroke: #C3C2B7;
 stroke-linecap: butt;' />
-<polyline points='111.99,197.25 121.18,178.73 130.37,195.54 139.57,200.39 148.76,200.25 157.95,207.39 167.14,192.34 176.33,190.32 185.52,198.70 194.71,197.33 203.90,187.38 213.10,190.52 222.29,174.16 231.48,200.09 240.67,190.07 249.86,196.16 259.05,216.27 268.24,194.25 277.43,166.50 286.63,164.22 295.82,184.56 305.01,202.67 314.20,163.07 323.39,173.40 332.58,197.76 341.77,195.66 350.96,180.60 360.16,195.64 369.35,173.78 378.54,176.69 387.73,182.17 396.92,180.83 406.11,178.92 415.30,184.38 424.49,189.76 433.69,173.09 442.88,158.39 452.07,117.63 461.26,165.40 470.45,126.32 479.64,165.38 488.83,141.80 498.02,152.42 507.22,130.32 516.41,104.19 525.60,97.37 534.79,127.35 543.98,123.16 ' style='stroke-width: 1.71; stroke: #2A78D6; stroke-linecap: butt;' />
-<polyline points='553.17,122.08 562.36,122.08 571.56,122.08 580.75,122.08 ' style='stroke-width: 1.71; stroke: #EB6834; stroke-dasharray: 4.55,2.28; stroke-linecap: butt;' />
+<polyline points='111.79,197.20 120.98,182.27 130.18,195.54 139.37,200.43 148.57,200.35 157.76,207.44 166.96,192.28 176.15,190.27 185.35,197.83 194.54,197.33 203.74,187.23 212.93,190.38 222.13,174.04 231.32,199.95 240.52,190.01 249.71,193.44 258.91,216.37 268.10,194.60 277.30,165.98 286.49,163.97 295.69,184.50 304.88,202.75 314.08,162.87 323.27,173.16 332.47,197.74 341.66,195.62 350.86,180.38 360.05,195.63 369.25,173.22 378.44,176.50 387.64,182.60 396.84,180.68 406.03,178.73 415.23,184.25 424.42,189.54 433.62,172.93 442.81,158.04 452.01,117.06 461.20,165.16 470.40,128.95 479.59,162.11 488.79,141.06 497.98,152.32 507.18,129.60 516.37,103.75 525.57,96.35 534.76,126.04 543.96,122.45 ' style='stroke-width: 1.71; stroke: #2A78D6; stroke-linecap: butt;' />
+<polyline points='553.15,121.17 562.35,121.17 571.54,121.17 580.74,121.17 ' style='stroke-width: 1.71; stroke: #EB6834; stroke-dasharray: 4.55,2.28; stroke-linecap: butt;' />
 </g>
 <g clip-path='url(#cpMC4wMHw2MTIuMDB8MC4wMHwzMDIuNDA=)'>
-<text x='44.57' y='253.25' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='10.67px' lengthAdjust='spacingAndGlyphs'>£0</text>
-<text x='44.57' y='212.23' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.14px' lengthAdjust='spacingAndGlyphs'>£100k</text>
-<text x='44.57' y='171.21' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.14px' lengthAdjust='spacingAndGlyphs'>£200k</text>
-<text x='44.57' y='130.19' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.14px' lengthAdjust='spacingAndGlyphs'>£300k</text>
-<text x='44.57' y='89.17' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.14px' lengthAdjust='spacingAndGlyphs'>£400k</text>
-<text x='44.57' y='48.15' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.14px' lengthAdjust='spacingAndGlyphs'>£500k</text>
-<text x='109.37' y='272.13' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='39.47px' lengthAdjust='spacingAndGlyphs'>Jan 2011</text>
-<text x='186.83' y='272.13' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='40.53px' lengthAdjust='spacingAndGlyphs'>Mar 2011</text>
-<text x='266.93' y='272.13' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='42.13px' lengthAdjust='spacingAndGlyphs'>May 2011</text>
-<text x='347.03' y='272.13' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='36.27px' lengthAdjust='spacingAndGlyphs'>Jul 2011</text>
-<text x='428.43' y='272.13' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='41.08px' lengthAdjust='spacingAndGlyphs'>Sep 2011</text>
-<text x='508.53' y='272.13' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='41.06px' lengthAdjust='spacingAndGlyphs'>Nov 2011</text>
-<text x='588.62' y='272.13' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='39.47px' lengthAdjust='spacingAndGlyphs'>Jan 2012</text>
-<text transform='translate(13.26,149.74) rotate(-90)' text-anchor='middle' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='71.67px' lengthAdjust='spacingAndGlyphs'>Weekly revenue</text>
-<line x1='98.33' y1='58.43' x2='112.15' y2='58.43' style='stroke-width: 1.07; stroke: #C3C2B7; stroke-linecap: butt;' />
-<line x1='98.33' y1='58.43' x2='112.15' y2='58.43' style='stroke-width: 1.71; stroke: #C3C2B7; stroke-linecap: butt;' />
-<line x1='98.33' y1='58.43' x2='112.15' y2='58.43' style='stroke-width: 1.71; stroke: #C3C2B7; stroke-dasharray: 4.55,2.28; stroke-linecap: butt;' />
-<line x1='98.33' y1='75.71' x2='112.15' y2='75.71' style='stroke-width: 1.07; stroke: #2A78D6; stroke-linecap: butt;' />
-<line x1='98.33' y1='75.71' x2='112.15' y2='75.71' style='stroke-width: 1.71; stroke: #2A78D6; stroke-linecap: butt;' />
-<line x1='98.33' y1='75.71' x2='112.15' y2='75.71' style='stroke-width: 1.71; stroke: #2A78D6; stroke-dasharray: 4.55,2.28; stroke-linecap: butt;' />
-<line x1='98.33' y1='92.99' x2='112.15' y2='92.99' style='stroke-width: 1.07; stroke: #EB6834; stroke-linecap: butt;' />
-<line x1='98.33' y1='92.99' x2='112.15' y2='92.99' style='stroke-width: 1.71; stroke: #EB6834; stroke-linecap: butt;' />
-<line x1='98.33' y1='92.99' x2='112.15' y2='92.99' style='stroke-width: 1.71; stroke: #EB6834; stroke-dasharray: 4.55,2.28; stroke-linecap: butt;' />
-<text x='119.86' y='61.93' style='font-size: 9.60px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='72.51px' lengthAdjust='spacingAndGlyphs'>All trading weeks</text>
-<text x='119.86' y='79.21' style='font-size: 9.60px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='70.91px' lengthAdjust='spacingAndGlyphs'>Model fit window</text>
-<text x='119.86' y='96.49' style='font-size: 9.60px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='55.45px' lengthAdjust='spacingAndGlyphs'>ETS forecast</text>
-<text x='49.95' y='31.56' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='375.06px' lengthAdjust='spacingAndGlyphs'>Weekly revenue with a 4-week ETS(M,N,N) forecast; bands are 80% / 95% intervals.</text>
-<text x='49.95' y='15.45' style='font-size: 13.00px; font-weight: bold;fill: #0B0B0B; font-family: Helvetica, Arial, sans-serif;' textLength='358.34px' lengthAdjust='spacingAndGlyphs'>Four weeks ahead: the level holds, the uncertainty is wide</text>
-<text x='49.95' y='286.03' style='font-size: 8.00px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='323.81px' lengthAdjust='spacingAndGlyphs'>Grey: every week the data window covers in full, including the year-end closure (near zero).</text>
-<text x='49.95' y='294.67' style='font-size: 8.00px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='431.04px' lengthAdjust='spacingAndGlyphs'>The model is fit only on the unbroken run of weeks after that closure; window-truncated edge weeks are excluded entirely.</text>
+<text x='44.34' y='253.52' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='10.66px' lengthAdjust='spacingAndGlyphs'>£0</text>
+<text x='44.34' y='212.23' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.11px' lengthAdjust='spacingAndGlyphs'>£100k</text>
+<text x='44.34' y='170.94' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.11px' lengthAdjust='spacingAndGlyphs'>£200k</text>
+<text x='44.34' y='129.65' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.11px' lengthAdjust='spacingAndGlyphs'>£300k</text>
+<text x='44.34' y='88.35' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.11px' lengthAdjust='spacingAndGlyphs'>£400k</text>
+<text x='44.34' y='47.06' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.11px' lengthAdjust='spacingAndGlyphs'>£500k</text>
+<text x='109.16' y='272.37' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='38.72px' lengthAdjust='spacingAndGlyphs'>Jan 2011</text>
+<text x='186.66' y='272.37' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='39.77px' lengthAdjust='spacingAndGlyphs'>Mar 2011</text>
+<text x='266.79' y='272.37' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='41.38px' lengthAdjust='spacingAndGlyphs'>May 2011</text>
+<text x='346.92' y='272.37' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='35.52px' lengthAdjust='spacingAndGlyphs'>Jul 2011</text>
+<text x='428.36' y='272.37' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='40.33px' lengthAdjust='spacingAndGlyphs'>Sep 2011</text>
+<text x='508.49' y='272.37' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='40.31px' lengthAdjust='spacingAndGlyphs'>Nov 2011</text>
+<text x='588.62' y='272.37' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='39.44px' lengthAdjust='spacingAndGlyphs'>Jan 2012</text>
+<text transform='translate(13.14,149.68) rotate(-90)' text-anchor='middle' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='71.52px' lengthAdjust='spacingAndGlyphs'>Weekly revenue</text>
+<line x1='98.16' y1='55.10' x2='111.98' y2='55.10' style='stroke-width: 1.07; stroke: #C3C2B7; stroke-linecap: butt;' />
+<line x1='98.16' y1='72.38' x2='111.98' y2='72.38' style='stroke-width: 1.71; stroke: #2A78D6; stroke-linecap: butt;' />
+<line x1='98.16' y1='89.66' x2='111.98' y2='89.66' style='stroke-width: 1.71; stroke: #EB6834; stroke-dasharray: 4.55,2.28; stroke-linecap: butt;' />
+<text x='119.69' y='58.53' style='font-size: 9.60px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='72.47px' lengthAdjust='spacingAndGlyphs'>All trading weeks</text>
+<text x='119.69' y='75.81' style='font-size: 9.60px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='70.86px' lengthAdjust='spacingAndGlyphs'>Model fit window</text>
+<text x='119.69' y='93.09' style='font-size: 9.60px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='55.45px' lengthAdjust='spacingAndGlyphs'>ETS forecast</text>
+<text x='49.72' y='31.16' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='375.02px' lengthAdjust='spacingAndGlyphs'>Weekly revenue with a 4-week ETS(M,N,N) forecast; bands are 80% / 95% intervals.</text>
+<text x='49.72' y='15.29' style='font-size: 13.00px; font-weight: bold;fill: #0B0B0B; font-family: Helvetica, Arial, sans-serif;' textLength='358.31px' lengthAdjust='spacingAndGlyphs'>Four weeks ahead: the level holds, the uncertainty is wide</text>
+<text x='49.72' y='286.10' style='font-size: 8.00px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='323.89px' lengthAdjust='spacingAndGlyphs'>Grey: every week the data window covers in full, including the year-end closure (near zero).</text>
+<text x='49.72' y='294.74' style='font-size: 8.00px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='430.52px' lengthAdjust='spacingAndGlyphs'>The model is fit only on the unbroken run of weeks after that closure; window-truncated edge weeks are excluded entirely.</text>
+</g>
 </g>
 </svg>

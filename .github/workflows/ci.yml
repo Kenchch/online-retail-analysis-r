@@ -46,12 +46,16 @@ jobs:
             any::forecast
             any::knitr
             any::rmarkdown
+            any::digest
 
       - name: Download and verify source data
         run: Rscript R/get_data.R
 
       - name: Run tests
         run: Rscript tests/run_tests.R
+
+      - name: Verify committed summary tables before rebuilding
+        run: Rscript R/verify_outputs.R
 
       - name: Rebuild analysis and report
         run: Rscript run_analysis.R
