@@ -128,25 +128,36 @@ clean_retail <- function(raw) {
 
   # Rule 2: net out the sales those credit notes cancel. A credit is matched
   # 1:1 to a sale line with the same customer, product, quantity and price;
-  # where several sales qualify, the latest is taken (a cancellation almost
-  # always follows its sale closely). Guest lines (no customer id) are never
+  # process credits in timestamp order and take the latest unused sale at or
+  # before each credit. Equal timestamps are eligible because source times
+  # only have minute precision; input row order breaks ties. Guest lines are never
   # matched - the pairing would be guesswork. Credits with no matching sale
   # (returns of pre-window sales, partial returns) net nothing: they are
   # already dropped, so revenue stays slightly gross of returns.
   d <- d |> mutate(.row = row_number())
-  credit_counts <- credits |>
+  eligible_credits <- credits |>
+    mutate(.credit_row = row_number()) |>
+    filter(!is.na(customer_id), quantity < 0) |>
+    transmute(customer_id, stock_code, quantity = -quantity, unit_price,
+              .credit_row, .credit_ts = invoice_ts)
+  candidates <- d |>
     filter(!is.na(customer_id)) |>
-    count(customer_id, stock_code,
-          quantity = -quantity, unit_price, name = "n_credits")
-  offset_rows <- d |>
-    filter(!is.na(customer_id)) |>
-    inner_join(credit_counts,
-               by = c("customer_id", "stock_code", "quantity", "unit_price")) |>
-    group_by(customer_id, stock_code, quantity, unit_price) |>
-    arrange(invoice_ts, .by_group = TRUE) |>
-    filter(row_number() > n() - first(n_credits)) |>
-    ungroup() |>
-    pull(.row)
+    inner_join(eligible_credits,
+               by = c("customer_id", "stock_code", "quantity", "unit_price"),
+               relationship = "many-to-many") |>
+    filter(invoice_ts <= .credit_ts) |>
+    arrange(.credit_ts, .credit_row, desc(invoice_ts), desc(.row))
+  used_sales <- rep(FALSE, nrow(d))
+  used_credits <- rep(FALSE, nrow(credits))
+  for (i in seq_len(nrow(candidates))) {
+    sale <- candidates$.row[i]
+    credit <- candidates$.credit_row[i]
+    if (!used_sales[sale] && !used_credits[credit]) {
+      used_sales[sale] <- TRUE
+      used_credits[credit] <- TRUE
+    }
+  }
+  offset_rows <- which(used_sales)
   d <- step(d, "Sales offset by a matching credit note (same customer, product, quantity, price)",
             !(d$.row %in% offset_rows))
   d$.row <- NULL
@@ -169,12 +180,7 @@ clean_retail <- function(raw) {
 }
 
 file_sha256 <- function(path) {
-  if (nzchar(Sys.which("sha256sum"))) {
-    strsplit(system2("sha256sum", shQuote(path), stdout = TRUE), " ")[[1]][1]
-  } else {
-    # Weaker but portable fingerprint where no sha256 tool exists.
-    paste(file.size(path), format(file.mtime(path)))
-  }
+  digest::digest(file = path, algo = "sha256", serialize = FALSE)
 }
 
 # Cache the cleaned table so the report can be re-knitted without re-reading

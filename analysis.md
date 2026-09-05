@@ -37,7 +37,17 @@ The netting rule earns its place: the two largest “orders” of the year
 being keyed in. Dropping only the credit notes — the obvious first cut —
 would leave those phantom sales in every top-product and top-customer
 list below; matching each credit note back to its sale (same customer,
-product, quantity and price) removes both sides of the pair.
+product, quantity and price) removes both sides of the pair. Credits are
+processed in time order; each consumes the latest unused sale at or
+before its timestamp. Same-minute matches are allowed because the source
+timestamp has minute precision, with input row order breaking ties. An
+earlier credit cannot cancel a future sale.
+
+**Correction (2026-09-05):** enforcing this chronological rule restores
+263 sales lines and £6,299.05 compared with the previous report. The old
+code matched credit counts over the entire observation window; all
+tables and figures below have been regenerated with chronological
+matching.
 
 ``` r
 knitr::kable(
@@ -48,15 +58,15 @@ knitr::kable(
 )
 ```
 
-| Rule (applied in order)                                                          | Rows dropped | Share of input |
-|:---------------------------------------------------------------------------------|-------------:|:---------------|
-| Credit notes (InvoiceNo starting with ‘C’)                                       |        9,288 | 1.7%           |
-| Sales offset by a matching credit note (same customer, product, quantity, price) |        3,072 | 0.6%           |
-| Service charges / adjustments (postage, fees, manual entries)                    |        2,262 | 0.4%           |
-| Non-positive quantity (stock corrections without a credit note)                  |        1,336 | 0.2%           |
-| Non-positive unit price (damaged / unsaleable write-offs)                        |        1,165 | 0.2%           |
+| Rule (applied in order) | Rows dropped | Share of input |
+|:---|---:|:---|
+| Credit notes (InvoiceNo starting with ‘C’) | 9,288 | 1.7% |
+| Sales offset by a matching credit note (same customer, product, quantity, price) | 2,787 | 0.5% |
+| Service charges / adjustments (postage, fees, manual entries) | 2,284 | 0.4% |
+| Non-positive quantity (stock corrections without a credit note) | 1,336 | 0.2% |
+| Non-positive unit price (damaged / unsaleable write-offs) | 1,165 | 0.2% |
 
-541,909 raw rows become 524,786 clean sales lines (3.2% dropped), worth
+541,909 raw rows become 525,049 clean sales lines (3.1% dropped), worth
 £9.88m in revenue. Two caveats worth stating up front:
 
 - **Netting is exact-match only.** A credit note nets a sale only when
@@ -94,21 +104,21 @@ knitr::kable(
 )
 ```
 
-| Month   | Revenue | Invoices | Identified customers | Revenue / invoice (£) | MoM growth (%) |
-|:--------|:--------|---------:|---------------------:|----------------------:|:---------------|
-| 2010-12 | £769k   |    1,539 |                  883 |                499.57 | —              |
-| 2011-01 | £576k   |    1,067 |                  735 |                539.66 | -25.1          |
-| 2011-02 | £506k   |    1,087 |                  755 |                465.85 | -12.1          |
-| 2011-03 | £682k   |    1,431 |                  971 |                476.60 | 34.7           |
-| 2011-04 | £503k   |    1,222 |                  847 |                411.92 | -26.2          |
-| 2011-05 | £734k   |    1,652 |                1,052 |                444.51 | 45.9           |
-| 2011-06 | £730k   |    1,511 |                  986 |                483.24 | -0.6           |
-| 2011-07 | £683k   |    1,442 |                  943 |                473.45 | -6.5           |
-| 2011-08 | £718k   |    1,333 |                  930 |                538.46 | 5.1            |
-| 2011-09 | £1.02m  |    1,805 |                1,253 |                564.68 | 42             |
-| 2011-10 | £1.07m  |    1,984 |                1,354 |                539.80 | 5.1            |
-| 2011-11 | £1.44m  |    2,731 |                1,655 |                527.89 | 34.6           |
-| 2011-12 | £444k   |      809 |                  610 |                548.92 | -69.2          |
+| Month | Revenue | Invoices | Identified customers | Revenue / invoice (£) | MoM growth (%) |
+|:---|:---|---:|---:|---:|:---|
+| 2010-12 | £769k | 1,542 | 883 | 498.92 | — |
+| 2011-01 | £567k | 1,073 | 737 | 528.25 | -26.3 |
+| 2011-02 | £506k | 1,089 | 756 | 464.74 | -10.7 |
+| 2011-03 | £684k | 1,431 | 970 | 478.04 | 35.2 |
+| 2011-04 | £511k | 1,226 | 849 | 416.40 | -25.4 |
+| 2011-05 | £734k | 1,652 | 1,051 | 444.37 | 43.8 |
+| 2011-06 | £730k | 1,512 | 986 | 482.86 | -0.5 |
+| 2011-07 | £684k | 1,445 | 945 | 473.29 | -6.3 |
+| 2011-08 | £717k | 1,336 | 933 | 536.47 | 4.8 |
+| 2011-09 | £1.02m | 1,808 | 1,254 | 564.06 | 42.3 |
+| 2011-10 | £1.07m | 1,986 | 1,356 | 539.39 | 5 |
+| 2011-11 | £1.44m | 2,740 | 1,657 | 527.31 | 34.9 |
+| 2011-12 | £446k | 811 | 610 | 550.12 | -69.1 |
 
 ``` r
 monthly <- sql$monthly_summary |>
@@ -142,7 +152,7 @@ ggplot(monthly, aes(month_date, revenue)) +
 
 The shape is a giftware wholesaler’s year in one picture: an
 unremarkable first half, an autumn ramp as retail customers stock up for
-Christmas, a 34.6% November jump — and a December bar that only looks
+Christmas, a 34.9% November jump — and a December bar that only looks
 like a crash because the data stops on the 9th (its `trading_days`
 column in [`output/monthly_growth.csv`](output/monthly_growth.csv) says
 the same to anyone reading the CSV without this caption).
@@ -204,7 +214,7 @@ knitr::kable(
 
 | Stock code | Description                        | Revenue |  Units | Invoices |
 |:-----------|:-----------------------------------|:--------|-------:|---------:|
-| 22423      | REGENCY CAKESTAND 3 TIER           | £170k   | 13,479 |    1,939 |
+| 22423      | REGENCY CAKESTAND 3 TIER           | £171k   | 13,537 |    1,948 |
 | 85123A     | WHITE HANGING HEART T-LIGHT HOLDER | £100k   | 35,428 |    2,253 |
 | 47566      | PARTY BUNTING                      | £99k    | 18,103 |    1,675 |
 | 85099B     | JUMBO BAG RED RETROSPOT            | £93k    | 47,593 |    2,078 |
@@ -212,8 +222,8 @@ knitr::kable(
 | 22086      | PAPER CHAIN KIT 50’S CHRISTMAS     | £64k    | 18,948 |    1,152 |
 | 84879      | ASSORTED COLOUR BIRD ORNAMENT      | £59k    | 36,432 |    1,452 |
 | 79321      | CHILLI LIGHTS                      | £54k    | 10,229 |      658 |
-| 22197      | SMALL POPCORN HOLDER               | £51k    | 56,696 |    1,388 |
-| 22502      | PICNIC BASKET WICKER SMALL         | £51k    |  1,871 |      459 |
+| 22197      | SMALL POPCORN HOLDER               | £51k    | 56,699 |    1,389 |
+| 22502      | PICNIC BASKET WICKER SMALL         | £51k    |  1,872 |      460 |
 
 ``` r
 top <- sql$top_products |>
@@ -279,8 +289,8 @@ knitr::kable(
 
 | Customer type | Identified customers | Revenue | Share of identified revenue (%) |
 |:--------------|---------------------:|:--------|--------------------------------:|
-| one-off       |                1,554 | £621k   |                             7.4 |
-| repeat        |                2,768 | £7.74m  |                            92.6 |
+| one-off       |                1,555 | £622k   |                             7.4 |
+| repeat        |                2,769 | £7.75m  |                            92.6 |
 
 ``` r
 pareto <- customer_pareto(lines)
@@ -380,48 +390,42 @@ model on the same data.
     Rscript run_analysis.R     # clean -> SQL -> tables -> knit this report
 
 ``` r
-sessionInfo()
+cat(sub("[[:blank:]]+$", "", capture.output(sessionInfo())), sep = "\n")
 ```
 
-    ## R version 4.3.3 (2024-02-29)
-    ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 24.04.4 LTS
+    ## R version 4.6.1 (2026-06-24 ucrt)
+    ## Platform: x86_64-w64-mingw32/x64
+    ## Running under: Windows 11 x64 (build 26200)
     ## 
     ## Matrix products: default
-    ## BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0 
-    ## LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.12.0
+    ##   LAPACK version 3.12.1
     ## 
     ## locale:
-    ##  [1] LC_CTYPE=C.UTF-8    LC_NUMERIC=C        LC_TIME=C          
-    ##  [4] LC_COLLATE=C        LC_MONETARY=C       LC_MESSAGES=C      
-    ##  [7] LC_PAPER=C          LC_NAME=C           LC_ADDRESS=C       
-    ## [10] LC_TELEPHONE=C      LC_MEASUREMENT=C    LC_IDENTIFICATION=C
+    ## [1] LC_COLLATE=C         LC_CTYPE=en_US.UTF-8 LC_MONETARY=C
+    ## [4] LC_NUMERIC=C         LC_TIME=C
     ## 
-    ## time zone: Etc/UTC
-    ## tzcode source: system (glibc)
+    ## time zone: Pacific/Auckland
+    ## tzcode source: internal
     ## 
     ## attached base packages:
-    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
+    ## [1] stats     graphics  grDevices utils     datasets  methods   base
     ## 
     ## other attached packages:
-    ## [1] forecast_8.21.1 zoo_1.8-12      RSQLite_2.3.4   DBI_1.2.2      
-    ## [5] scales_1.3.0    ggplot2_3.4.4   lubridate_1.9.3 dplyr_1.1.4    
-    ## [9] readr_2.1.5    
+    ## [1] forecast_9.0.2  zoo_1.9-0       RSQLite_3.53.3  DBI_1.3.0
+    ## [5] scales_1.4.0    ggplot2_4.0.3   lubridate_1.9.5 dplyr_1.2.1
+    ## [9] readr_2.2.0
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] gtable_0.3.4      xfun_0.41         lattice_0.22-5    tzdb_0.4.0       
-    ##  [5] quadprog_1.5-8    vctrs_0.6.5       tools_4.3.3       generics_0.1.3   
-    ##  [9] curl_5.2.0        parallel_4.3.3    tibble_3.2.1      fansi_1.0.5      
-    ## [13] highr_0.10        blob_1.2.4        xts_0.13.2        pkgconfig_2.0.3  
-    ## [17] lifecycle_1.0.4   compiler_4.3.3    farver_2.1.1      stringr_1.5.1    
-    ## [21] munsell_0.5.0     htmltools_0.5.7   yaml_2.3.8        pillar_1.9.0     
-    ## [25] crayon_1.5.2      cachem_1.0.8      nlme_3.1-164      fracdiff_1.5-3   
-    ## [29] tidyselect_1.2.0  digest_0.6.34     stringi_1.8.3     labeling_0.4.3   
-    ## [33] tseries_0.10-55   fastmap_1.1.1     grid_4.3.3        colorspace_2.1-0 
-    ## [37] cli_3.6.2         magrittr_2.0.3    utf8_1.2.4        withr_2.5.0      
-    ## [41] bit64_4.0.5       timechange_0.3.0  TTR_0.24.4        rmarkdown_2.25   
-    ## [45] quantmod_0.4.26   bit_4.0.5         nnet_7.3-19       timeDate_4032.109
-    ## [49] hms_1.1.3         urca_1.3-3        memoise_2.0.1     evaluate_0.23    
-    ## [53] knitr_1.45        lmtest_0.9-40     rlang_1.1.3       Rcpp_1.0.12      
-    ## [57] glue_1.7.0        svglite_2.1.3     vroom_1.6.5       R6_2.5.1         
-    ## [61] systemfonts_1.0.5
+    ##  [1] generics_0.1.4     stringi_1.8.9      lattice_0.22-9     hms_1.1.4
+    ##  [5] digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5     grid_4.6.1
+    ##  [9] timechange_0.4.0   RColorBrewer_1.1-3 fastmap_1.2.0      blob_1.3.0
+    ## [13] textshaping_1.0.5  cli_3.6.6          rlang_1.3.0        crayon_1.5.3
+    ## [17] bit64_4.8.6        yaml_2.3.12        withr_3.0.3        cachem_1.1.0
+    ## [21] tools_4.6.1        parallel_4.6.1     tzdb_0.5.0         memoise_2.0.1
+    ## [25] colorspace_2.1-3   vctrs_0.7.3        R6_2.6.1           lifecycle_1.0.5
+    ## [29] stringr_1.6.0      bit_4.6.0          vroom_1.7.1        pkgconfig_2.0.3
+    ## [33] urca_1.3-4         pillar_1.11.1      gtable_0.3.6       glue_1.8.1
+    ## [37] Rcpp_1.1.2         systemfonts_1.3.2  xfun_0.60          tibble_3.3.1
+    ## [41] tidyselect_1.2.1   knitr_1.51         farver_2.1.2       htmltools_0.5.9
+    ## [45] nlme_3.1-169       labeling_0.4.3     svglite_2.2.2      rmarkdown_2.32
+    ## [49] timeDate_4052.112  fracdiff_1.5-4     compiler_4.6.1     S7_0.2.2

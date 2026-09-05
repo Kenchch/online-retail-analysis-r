@@ -12,7 +12,7 @@ on GitHub with all figures and tables.
 
 | Input | Audited output | Reproducibility |
 |---|---|---|
-| **541,909** invoice lines | **524,786** clean sales lines · **£9.88m** revenue | SHA-256-pinned download · fingerprinted cache · **6/6 tests** |
+| **541,909** invoice lines | **525,049** clean sales lines · **£9.88m** revenue | SHA-256-pinned download · fingerprinted cache · automated regression tests |
 
 ![Monthly revenue: a flat first half followed by a steep autumn rise](analysis_files/figure-gfm/monthly-revenue-1.svg)
 
@@ -40,7 +40,10 @@ year (80,995 and 74,215 units) were both **cancelled within minutes** of
 being keyed in. Simply excluding cancellation invoices — the obvious first
 cut — would have left those phantom sales at the top of every headline
 table. The pipeline instead nets each credit note against its matching sale
-(same customer, product, quantity, price), so both sides of a cancelled pair
+(same customer, product, quantity, price). Credits are processed in time order
+and consume the latest unused sale at or before the credit timestamp; a credit
+cannot cancel a future purchase. Same-minute matches are allowed because the
+source records only minutes, with input row order breaking ties. Thus both sides of a cancelled pair
 are removed and the "top products" are things the business actually sold.
 
 ## Reconciliation with retail-ai-pipeline
@@ -52,14 +55,27 @@ same SHA-256-pinned UCI workbook but apply different accounting rules:
 | Bridge | Revenue |
 |---|---:|
 | Python pipeline: valid positive sales | £10,247,353.28 |
-| Matched sales removed when a credit note reverses them | −£394,233.81 |
-| Exact duplicate rows retained by this R analysis | +£24,241.34 |
-| **This analysis: cancellation-netted sales** | **£9,877,360.81** |
+| Difference in accepted positive-sale rows before credit matching | +£24,765.59 |
+| R positive sales before credit matching | £10,272,118.87 |
+| Matched sales removed when a later or same-minute credit note reverses them | −£388,459.01 |
+| **This analysis: cancellation-netted sales** | **£9,883,659.86** |
 
 Neither result is presented as a universal definition of revenue. The Python
 pipeline measures accepted positive invoice lines; this analysis estimates net
 sales after matching credit notes. The bridge makes that scope difference
 explicit and reproducible.
+
+The positive-sale selection difference includes this analysis retaining exact
+duplicates; it is not attributed solely to duplicates. Its R subtotal can be
+recomputed by passing the non-credit input rows to `clean_retail()`; subtracting
+the final result gives the matched-sale reduction.
+
+**Correction (2026-09-05):** the previous matching code counted credits across
+the entire date range and could remove sales occurring after a credit. Enforcing
+chronology restores 263 sales lines and £6,299.05 relative to the previously
+published £9,877,360.81. The report, charts and summary tables have been rebuilt.
+Exact matching remains a heuristic: unmatched and partial returns are excluded,
+so this is not a complete accounting measure of net revenue.
 
 ## How this was built
 
@@ -80,15 +96,27 @@ how it arrives.
 
 ## Running it
 
-Requires R (≥ 4.3) with: readr, dplyr, lubridate, ggplot2, scales, svglite,
-stringr, DBI, RSQLite, zoo, forecast, knitr, rmarkdown — all available as
+Requires R (≥ 4.3) with: readr, dplyr (≥ 1.1.1), lubridate, ggplot2, scales, svglite,
+stringr, DBI, RSQLite, zoo, forecast, knitr, rmarkdown, digest — all available as
 Debian/Ubuntu `r-cran-*` packages or from CRAN — plus pandoc for knitting.
 Run everything from the project root:
+
+Install dependencies once before using the quick-start commands:
+
+```r
+install.packages(c("readr", "dplyr", "lubridate", "ggplot2", "scales",
+  "svglite", "stringr", "DBI", "RSQLite", "zoo", "forecast", "knitr",
+  "rmarkdown", "digest"), repos = "https://cloud.r-project.org")
+```
+
+The `digest` package supplies SHA-256 on every platform. Download verification
+never falls back to file size, and cache fingerprints never fall back to modification time.
 
 ```sh
 Rscript R/get_data.R       # fetch + verify the raw data
 Rscript tests/run_tests.R  # unit tests (exit non-zero on failure)
 Rscript run_analysis.R     # clean -> SQL -> output/ tables -> analysis.md
+Rscript R/verify_outputs.R # compare committed summary tables with current code
 ```
 
 ## Layout
@@ -110,7 +138,7 @@ Rscript run_analysis.R     # clean -> SQL -> output/ tables -> analysis.md
 
 ## Findings, in one breath
 
-After netting out cancelled sales, 541,909 raw lines become 524,786 clean
+After netting out cancelled sales, 541,909 raw lines become 525,049 clean
 sales lines worth £9.88m. Revenue is flat through the first half of the
 year, then climbs from September to a November peak at roughly double the
 mid-year level; it is a weekday (trade) business with no Saturday trading;

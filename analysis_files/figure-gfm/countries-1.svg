@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='svglite' width='612.00pt' height='273.60pt' viewBox='0 0 612.00 273.60'>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='612.00pt' height='273.60pt' viewBox='0 0 612.00 273.60'>
+<g class='svglite'>
 <defs>
   <style type='text/css'><![CDATA[
     .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
@@ -12,6 +13,10 @@
     .svglite text {
       white-space: pre;
     }
+    .svglite g.glyphgroup path {
+      fill: inherit;
+      stroke: none;
+    }
   ]]></style>
 </defs>
 <rect width='100%' height='100%' style='stroke: none; fill: #FCFCFB;'/>
@@ -21,51 +26,52 @@
   </clipPath>
 </defs>
 <g clip-path='url(#cpMC4wMHw2MTIuMDB8MC4wMHwyNzMuNjA=)'>
-<rect x='0.00' y='0.00' width='612.00' height='273.60' style='stroke-width: 1.16; stroke: none; fill: #FCFCFB;' />
+<rect x='0.000000000000064' y='-0.000000000000057' width='612.00' height='273.60' style='stroke-width: 1.16; stroke: none; fill: #FCFCFB;' />
 </g>
 <defs>
-  <clipPath id='cpNjMuMDh8NjA2LjAyfDM5LjcyfDI0MC43MA=='>
-    <rect x='63.08' y='39.72' width='542.94' height='200.98' />
+  <clipPath id='cpNjMuMDN8NjA2LjAyfDM5LjI0fDI0MS4xMA=='>
+    <rect x='63.03' y='39.24' width='542.99' height='201.86' />
   </clipPath>
 </defs>
-<g clip-path='url(#cpNjMuMDh8NjA2LjAyfDM5LjcyfDI0MC43MA==)'>
-<rect x='63.08' y='39.72' width='542.94' height='200.98' style='stroke-width: 1.16; stroke: none; fill: #FCFCFB;' />
-<polyline points='63.08,225.99 606.02,225.99 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='63.08,201.48 606.02,201.48 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='63.08,176.97 606.02,176.97 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='63.08,152.46 606.02,152.46 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='63.08,127.95 606.02,127.95 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='63.08,103.45 606.02,103.45 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='63.08,78.94 606.02,78.94 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='63.08,54.43 606.02,54.43 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='63.08,240.70 63.08,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='243.77,240.70 243.77,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='424.45,240.70 424.45,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='605.14,240.70 605.14,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<rect x='63.08' y='46.83' width='512.21' height='15.20' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='63.08' y='71.34' width='473.17' height='15.20' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='63.08' y='95.85' width='368.26' height='15.20' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='63.08' y='120.36' width='330.27' height='15.20' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='63.08' y='144.87' width='247.78' height='15.20' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='63.08' y='169.38' width='95.28' height='15.20' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='63.08' y='193.89' width='93.96' height='15.20' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='63.08' y='218.40' width='67.42' height='15.20' style='stroke-width: 1.07; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<g clip-path='url(#cpNjMuMDN8NjA2LjAyfDM5LjI0fDI0MS4xMA==)'>
+<rect x='63.03' y='39.24' width='542.99' height='201.86' style='stroke-width: 1.16; stroke: none; fill: #FCFCFB;' />
+<polyline points='63.03,226.33 606.02,226.33 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='63.03,201.72 606.02,201.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='63.03,177.10 606.02,177.10 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='63.03,152.48 606.02,152.48 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='63.03,127.87 606.02,127.87 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='63.03,103.25 606.02,103.25 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='63.03,78.63 606.02,78.63 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='63.03,54.01 606.02,54.01 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='63.03,241.10 63.03,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='243.73,241.10 243.73,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='424.44,241.10 424.44,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='605.14,241.10 605.14,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<rect x='63.03' y='46.38' width='512.26' height='15.26' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='63.03' y='71.00' width='473.38' height='15.26' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='63.03' y='95.62' width='368.91' height='15.26' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='63.03' y='120.23' width='330.55' height='15.26' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='63.03' y='144.85' width='247.91' height='15.26' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='63.03' y='169.47' width='95.30' height='15.26' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='63.03' y='194.08' width='94.05' height='15.26' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='63.03' y='218.70' width='67.43' height='15.26' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
 </g>
 <g clip-path='url(#cpMC4wMHw2MTIuMDB8MC4wMHwyNzMuNjA=)'>
-<text x='57.70' y='229.49' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.14px' lengthAdjust='spacingAndGlyphs'>Japan</text>
-<text x='57.70' y='204.98' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='24.54px' lengthAdjust='spacingAndGlyphs'>Spain</text>
-<text x='57.70' y='180.47' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='49.59px' lengthAdjust='spacingAndGlyphs'>Switzerland</text>
-<text x='57.70' y='155.96' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='37.32px' lengthAdjust='spacingAndGlyphs'>Australia</text>
-<text x='57.70' y='131.45' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='29.86px' lengthAdjust='spacingAndGlyphs'>France</text>
-<text x='57.70' y='106.94' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='39.46px' lengthAdjust='spacingAndGlyphs'>Germany</text>
-<text x='57.70' y='82.43' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='22.39px' lengthAdjust='spacingAndGlyphs'>EIRE</text>
-<text x='57.70' y='57.92' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='51.72px' lengthAdjust='spacingAndGlyphs'>Netherlands</text>
-<text x='63.08' y='253.07' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='10.67px' lengthAdjust='spacingAndGlyphs'>£0</text>
-<text x='243.77' y='253.07' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.14px' lengthAdjust='spacingAndGlyphs'>£100k</text>
-<text x='424.45' y='253.07' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.14px' lengthAdjust='spacingAndGlyphs'>£200k</text>
-<text x='605.14' y='253.07' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.14px' lengthAdjust='spacingAndGlyphs'>£300k</text>
-<text x='334.55' y='265.44' text-anchor='middle' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='40.01px' lengthAdjust='spacingAndGlyphs'>Revenue</text>
-<text x='63.08' y='31.56' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='381.74px' lengthAdjust='spacingAndGlyphs'>Top international markets by revenue. The UK itself accounts for 84.8% of all revenue.</text>
-<text x='63.08' y='15.45' style='font-size: 13.00px; font-weight: bold;fill: #0B0B0B; font-family: Helvetica, Arial, sans-serif;' textLength='287.48px' lengthAdjust='spacingAndGlyphs'>Outside the UK, the near neighbours dominate</text>
+<text x='57.65' y='229.77' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.11px' lengthAdjust='spacingAndGlyphs'>Japan</text>
+<text x='57.65' y='205.15' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='24.52px' lengthAdjust='spacingAndGlyphs'>Spain</text>
+<text x='57.65' y='180.53' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='49.55px' lengthAdjust='spacingAndGlyphs'>Switzerland</text>
+<text x='57.65' y='155.92' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='37.30px' lengthAdjust='spacingAndGlyphs'>Australia</text>
+<text x='57.65' y='131.30' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='29.83px' lengthAdjust='spacingAndGlyphs'>France</text>
+<text x='57.65' y='106.68' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='39.42px' lengthAdjust='spacingAndGlyphs'>Germany</text>
+<text x='57.65' y='82.07' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='22.41px' lengthAdjust='spacingAndGlyphs'>EIRE</text>
+<text x='57.65' y='57.45' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='51.67px' lengthAdjust='spacingAndGlyphs'>Netherlands</text>
+<text x='63.03' y='253.35' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='10.66px' lengthAdjust='spacingAndGlyphs'>£0</text>
+<text x='243.73' y='253.35' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.11px' lengthAdjust='spacingAndGlyphs'>£100k</text>
+<text x='424.44' y='253.35' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.11px' lengthAdjust='spacingAndGlyphs'>£200k</text>
+<text x='605.14' y='253.35' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='26.11px' lengthAdjust='spacingAndGlyphs'>£300k</text>
+<text x='334.53' y='265.52' text-anchor='middle' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='40.03px' lengthAdjust='spacingAndGlyphs'>Revenue</text>
+<text x='63.03' y='31.16' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='380.64px' lengthAdjust='spacingAndGlyphs'>Top international markets by revenue. The UK itself accounts for 84.8% of all revenue.</text>
+<text x='63.03' y='15.29' style='font-size: 13.00px; font-weight: bold;fill: #0B0B0B; font-family: Helvetica, Arial, sans-serif;' textLength='287.45px' lengthAdjust='spacingAndGlyphs'>Outside the UK, the near neighbours dominate</text>
+</g>
 </g>
 </svg>

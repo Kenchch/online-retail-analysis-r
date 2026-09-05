@@ -52,7 +52,15 @@ The netting rule earns its place: the two largest "orders" of the year
 keyed in. Dropping only the credit notes — the obvious first cut — would
 leave those phantom sales in every top-product and top-customer list below;
 matching each credit note back to its sale (same customer, product, quantity
-and price) removes both sides of the pair.
+and price) removes both sides of the pair. Credits are processed in time order;
+each consumes the latest unused sale at or before its timestamp. Same-minute
+matches are allowed because the source timestamp has minute precision, with
+input row order breaking ties. An earlier credit cannot cancel a future sale.
+
+**Correction (2026-09-05):** enforcing this chronological rule restores 263
+sales lines and £6,299.05 compared with the previous report. The old code
+matched credit counts over the entire observation window; all tables and
+figures below have been regenerated with chronological matching.
 
 ```{r cleaning-audit}
 knitr::kable(
@@ -350,5 +358,5 @@ Rscript run_analysis.R     # clean -> SQL -> tables -> knit this report
 ```
 
 ```{r session-info}
-sessionInfo()
+cat(sub("[[:blank:]]+$", "", capture.output(sessionInfo())), sep = "\n")
 ```

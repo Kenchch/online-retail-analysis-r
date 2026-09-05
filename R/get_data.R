@@ -26,25 +26,18 @@ if (!file.exists(file.path("R", "get_data.R"))) {
 dest <- file.path("data", "raw", "online_retail.csv")
 
 sha256_of <- function(path) {
-  # Prefer the system tool (always present on the Linux runners this targets);
-  # fall back to openssl if the package happens to be installed.
-  if (nzchar(Sys.which("sha256sum"))) {
-    strsplit(system2("sha256sum", shQuote(path), stdout = TRUE), " ")[[1]][1]
-  } else if (requireNamespace("openssl", quietly = TRUE)) {
-    paste(as.character(openssl::sha256(file(path))), collapse = "")
-  } else {
-    NA_character_
-  }
+  digest::digest(file = path, algo = "sha256", serialize = FALSE)
 }
 
 verify <- function(path) {
   size_ok <- file.size(path) == EXPECTED_BYTES
   digest <- sha256_of(path)
-  if (is.na(digest)) {
-    warning("No sha256 tool available; verified byte count only.")
-    return(size_ok)
-  }
   size_ok && identical(digest, EXPECTED_SHA256)
+}
+
+# Fail before modifying an existing download if the required verifier is absent.
+if (!requireNamespace("digest", quietly = TRUE)) {
+  stop("Install the required SHA-256 verifier: install.packages('digest')")
 }
 
 if (file.exists(dest) && verify(dest)) {
