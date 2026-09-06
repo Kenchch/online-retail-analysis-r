@@ -50,7 +50,7 @@ are removed and the "top products" are things the business actually sold.
 
 This repository and
 [`retail-ai-pipeline`](https://github.com/Kenchch/retail-ai-pipeline) use the
-same SHA-256-pinned UCI workbook but apply different accounting rules:
+same SHA-256-pinned CSV export of the UCI Online Retail dataset distributed with Databricks' Spark: The Definitive Guide (pinned by SHA-256) but apply different accounting rules:
 
 | Bridge | Revenue |
 |---|---:|
@@ -70,10 +70,6 @@ duplicates; it is not attributed solely to duplicates. Its R subtotal can be
 recomputed by passing the non-credit input rows to `clean_retail()`; subtracting
 the final result gives the matched-sale reduction.
 
-**Correction (2026-09-05):** the previous matching code counted credits across
-the entire date range and could remove sales occurring after a credit. Enforcing
-chronology restores 263 sales lines and £6,299.05 relative to the previously
-published £9,877,360.81. The report, charts and summary tables have been rebuilt.
 Exact matching remains a heuristic: unmatched and partial returns are excluded,
 so this is not a complete accounting measure of net revenue.
 

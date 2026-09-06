@@ -45,8 +45,7 @@ raw_csv_path <- function() proj_path("data", "raw", "online_retail.csv")
 # Load
 # ---------------------------------------------------------------------------
 
-# The mirror serves the file as Windows-1252 (a handful of product descriptions
-# carry accented characters); reading it as UTF-8 silently mangles them.
+# The mirror CSV is UTF-8; read descriptions without transcoding to Windows-1252.
 read_retail_raw <- function(path = raw_csv_path()) {
   if (!file.exists(path)) {
     stop(
@@ -56,7 +55,6 @@ read_retail_raw <- function(path = raw_csv_path()) {
   }
   read_csv(
     path,
-    locale = locale(encoding = "Windows-1252"),
     col_types = cols(
       InvoiceNo   = col_character(),
       StockCode   = col_character(),

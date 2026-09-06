@@ -1,6 +1,6 @@
 ---
 title: "One year of online retail: a small, reproducible analysis in R"
-author: "See README.md for how to rebuild this document"
+author: "Feng Jiang"
 output:
   github_document:
     toc: true
@@ -117,7 +117,7 @@ knitr::kable(
 monthly <- sql$monthly_summary |>
   mutate(
     month_date = as_date(paste0(month, "-01")),
-    # December 2011 stops on the 9th - nine trading days dressed up as a
+    # December 2011 stops on the 9th - eight trading days dressed up as a
     # month would read as a collapse, so the partial month is flagged.
     partial = month_date + months(1) - days(1) > span[2]
   )
