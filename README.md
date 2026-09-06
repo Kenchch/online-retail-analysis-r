@@ -77,14 +77,6 @@ published £9,877,360.81. The report, charts and summary tables have been rebuil
 Exact matching remains a heuristic: unmatched and partial returns are excluded,
 so this is not a complete accounting measure of net revenue.
 
-## How this was built
-
-Built with AI pair-programming (Claude Code and OpenAI Codex) for drafting,
-refactoring and test scaffolding. I defined the analysis, selected the cleaning
-and credit-note rules, verified the reconciliations, and reviewed and edited the
-code. Commits where an assistant contributed code retain a `Co-Authored-By`
-trailer.
-
 ## Data
 
 [UCI Online Retail](https://doi.org/10.24432/C5BW33) (Chen, 2015, CC BY 4.0):
