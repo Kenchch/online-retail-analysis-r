@@ -140,3 +140,11 @@ The positive-sale bridge was independently recomputed by
 5,223 duplicate lines contribute £24,765.59 and three PADS lines contribute £0.003.
 Totals in the table are rounded to pence. This bridge reconciles revenue only;
 invoice counts use different cancellation policies.
+
+## How this was built
+
+I set the problem, the data contracts and the quality rules, ran the benchmarks
+and reviewed every diff; Claude Code and OpenAI Codex drafted code, refactored
+and scaffolded tests. The full note — including the `Co-Authored-By` trailers
+removed from this repository's history on 6 September 2026 — is on my profile:
+[How I use AI tools](https://github.com/Kenchch/Kenchch#how-i-use-ai-tools).
