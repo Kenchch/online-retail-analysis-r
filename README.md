@@ -50,12 +50,12 @@ are removed and the "top products" are things the business actually sold.
 
 This repository and
 [`retail-ai-pipeline`](https://github.com/Kenchch/retail-ai-pipeline) use the
-same SHA-256-pinned UCI workbook but apply different accounting rules:
+same SHA-256-pinned CSV export of the UCI Online Retail dataset distributed with Databricks' Spark: The Definitive Guide (pinned by SHA-256) but apply different accounting rules:
 
 | Bridge | Revenue |
 |---|---:|
 | Python pipeline: valid positive sales | £10,247,353.28 |
-| Difference in accepted positive-sale rows before credit matching | +£24,765.59 |
+| Exact duplicate invoice lines retained in R, quarantined by Python (5,223 rows; plus 3 PADS lines at £0.001) | +£24,765.59 |
 | R positive sales before credit matching | £10,272,118.87 |
 | Matched sales removed when a later or same-minute credit note reverses them | −£388,459.01 |
 | **This analysis: cancellation-netted sales** | **£9,883,659.86** |
@@ -65,15 +65,7 @@ pipeline measures accepted positive invoice lines; this analysis estimates net
 sales after matching credit notes. The bridge makes that scope difference
 explicit and reproducible.
 
-The positive-sale selection difference includes this analysis retaining exact
-duplicates; it is not attributed solely to duplicates. Its R subtotal can be
-recomputed by passing the non-credit input rows to `clean_retail()`; subtracting
-the final result gives the matched-sale reduction.
 
-**Correction (2026-09-05):** the previous matching code counted credits across
-the entire date range and could remove sales occurring after a credit. Enforcing
-chronology restores 263 sales lines and £6,299.05 relative to the previously
-published £9,877,360.81. The report, charts and summary tables have been rebuilt.
 Exact matching remains a heuristic: unmatched and partial returns are excluded,
 so this is not a complete accounting measure of net revenue.
 
@@ -142,3 +134,9 @@ holds the current level, fit only on the unbroken run of trading weeks after
 the year-end closure, with the stated caveat that one year of history cannot
 teach a model the December cliff. Details and charts:
 [analysis.md](analysis.md).
+
+The positive-sale bridge was independently recomputed by
+[`scripts/check_revenue_bridge.py`](https://github.com/Kenchch/retail-ai-pipeline/blob/main/scripts/check_revenue_bridge.py):
+5,223 duplicate lines contribute £24,765.59 and three PADS lines contribute £0.003.
+Totals in the table are rounded to pence. This bridge reconciles revenue only;
+invoice counts use different cancellation policies.
