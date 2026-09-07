@@ -46,6 +46,15 @@ cannot cancel a future purchase. Same-minute matches are allowed because the
 source records only minutes, with input row order breaking ties. Thus both sides of a cancelled pair
 are removed and the "top products" are things the business actually sold.
 
+How far that netting reaches is worth a number rather than an adjective.
+[`output/cleaning_audit.csv`](output/cleaning_audit.csv) records **2,787**
+sales removed by a matching credit against **9,288** credit lines in the file:
+the exact-match rule accounts for **30%** of them. The rest are credits that
+cannot pair off — service charges and adjustments, partial returns, and returns
+of sales made before the window opens — so they drop out on their own rules
+instead. Revenue here is net of cleanly cancelled sales and still gross of
+messy returns, which the report states and this quantifies.
+
 ## Reconciliation with retail-ai-pipeline
 
 This repository and
