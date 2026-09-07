@@ -29,46 +29,46 @@
 <rect x='0.00' y='0.00' width='612.00' height='259.20' style='stroke-width: 1.16; stroke: none; fill: #FCFCFB;' />
 </g>
 <defs>
-  <clipPath id='cpNDQuMzl8NjA2LjAyfDM5LjI0fDIyNS41Ng=='>
-    <rect x='44.39' y='39.24' width='561.63' height='186.32' />
+  <clipPath id='cpNDQuNjB8NjA2LjAyfDM5LjcyfDIyNS4yMA=='>
+    <rect x='44.60' y='39.72' width='561.43' height='185.48' />
   </clipPath>
 </defs>
-<g clip-path='url(#cpNDQuMzl8NjA2LjAyfDM5LjI0fDIyNS41Ng==)'>
-<rect x='44.39' y='39.24' width='561.63' height='186.32' style='stroke-width: 1.16; stroke: none; fill: #FCFCFB;' />
-<polyline points='44.39,225.56 606.02,225.56 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='44.39,182.11 606.02,182.11 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='44.39,138.65 606.02,138.65 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='44.39,95.20 606.02,95.20 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='44.39,51.74 606.02,51.74 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='98.75,225.56 98.75,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='189.33,225.56 189.33,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='279.92,225.56 279.92,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='370.50,225.56 370.50,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='461.09,225.56 461.09,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<polyline points='551.67,225.56 551.67,39.24 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
-<rect x='70.66' y='71.41' width='56.16' height='154.15' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='161.25' y='60.60' width='56.16' height='164.97' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='251.83' y='80.52' width='56.16' height='145.04' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='342.42' y='53.05' width='56.16' height='172.52' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='433.00' y='88.99' width='56.16' height='136.58' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
-<rect x='523.59' y='156.22' width='56.16' height='69.34' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<g clip-path='url(#cpNDQuNjB8NjA2LjAyfDM5LjcyfDIyNS4yMA==)'>
+<rect x='44.60' y='39.72' width='561.43' height='185.48' style='stroke-width: 1.16; stroke: none; fill: #FCFCFB;' />
+<polyline points='44.60,225.20 606.02,225.20 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='44.60,181.94 606.02,181.94 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='44.60,138.68 606.02,138.68 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='44.60,95.42 606.02,95.42 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='44.60,52.16 606.02,52.16 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='98.93,225.20 98.93,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='189.48,225.20 189.48,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='280.03,225.20 280.03,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='370.59,225.20 370.59,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='461.14,225.20 461.14,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<polyline points='551.69,225.20 551.69,39.72 ' style='stroke-width: 0.64; stroke: #E1E0D9; stroke-linecap: butt;' />
+<rect x='70.86' y='71.74' width='56.14' height='153.46' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='161.41' y='60.98' width='56.14' height='164.22' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='251.96' y='80.81' width='56.14' height='144.39' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='342.51' y='53.46' width='56.14' height='171.74' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='433.07' y='89.24' width='56.14' height='135.96' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
+<rect x='523.62' y='156.17' width='56.14' height='69.03' style='stroke-width: 1.16; stroke: none; stroke-linecap: butt; stroke-linejoin: miter; fill: #2A78D6;' />
 </g>
 <g clip-path='url(#cpMC4wMHw2MTIuMDB8MC4wMHwyNTkuMjA=)'>
-<text x='39.01' y='229.00' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='10.66px' lengthAdjust='spacingAndGlyphs'>£0</text>
-<text x='39.01' y='185.54' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='20.78px' lengthAdjust='spacingAndGlyphs'>£10k</text>
-<text x='39.01' y='142.09' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='20.78px' lengthAdjust='spacingAndGlyphs'>£20k</text>
-<text x='39.01' y='98.63' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='20.78px' lengthAdjust='spacingAndGlyphs'>£30k</text>
-<text x='39.01' y='55.18' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='20.78px' lengthAdjust='spacingAndGlyphs'>£40k</text>
-<text x='98.75' y='237.81' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='18.64px' lengthAdjust='spacingAndGlyphs'>Mon</text>
-<text x='189.33' y='237.81' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='16.16px' lengthAdjust='spacingAndGlyphs'>Tue</text>
-<text x='279.92' y='237.81' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='19.55px' lengthAdjust='spacingAndGlyphs'>Wed</text>
-<text x='370.50' y='237.81' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='16.52px' lengthAdjust='spacingAndGlyphs'>Thu</text>
-<text x='461.09' y='237.81' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='11.17px' lengthAdjust='spacingAndGlyphs'>Fri</text>
-<text x='551.67' y='237.81' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='17.06px' lengthAdjust='spacingAndGlyphs'>Sun</text>
-<text transform='translate(13.14,132.40) rotate(-90)' text-anchor='middle' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='87.28px' lengthAdjust='spacingAndGlyphs'>Mean daily revenue</text>
-<text x='44.39' y='31.16' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='193.12px' lengthAdjust='spacingAndGlyphs'>Mean revenue per trading day, by weekday.</text>
-<text x='44.39' y='15.29' style='font-size: 13.00px; font-weight: bold;fill: #0B0B0B; font-family: Helvetica, Arial, sans-serif;' textLength='407.84px' lengthAdjust='spacingAndGlyphs'>A weekday business: revenue peaks midweek, Saturdays are dark</text>
-<text x='44.39' y='251.54' style='font-size: 8.00px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='280.75px' lengthAdjust='spacingAndGlyphs'>No Saturday trading appears anywhere in the data - the bar is absent, not zero.</text>
+<text x='39.22' y='228.69' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='10.66px' lengthAdjust='spacingAndGlyphs'>£0</text>
+<text x='39.22' y='185.43' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='20.78px' lengthAdjust='spacingAndGlyphs'>£10k</text>
+<text x='39.22' y='142.17' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='20.78px' lengthAdjust='spacingAndGlyphs'>£20k</text>
+<text x='39.22' y='98.91' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='20.78px' lengthAdjust='spacingAndGlyphs'>£30k</text>
+<text x='39.22' y='55.66' text-anchor='end' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='20.78px' lengthAdjust='spacingAndGlyphs'>£40k</text>
+<text x='98.93' y='237.57' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='18.64px' lengthAdjust='spacingAndGlyphs'>Mon</text>
+<text x='189.48' y='237.57' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='15.66px' lengthAdjust='spacingAndGlyphs'>Tue</text>
+<text x='280.03' y='237.57' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='19.44px' lengthAdjust='spacingAndGlyphs'>Wed</text>
+<text x='370.59' y='237.57' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='16.47px' lengthAdjust='spacingAndGlyphs'>Thu</text>
+<text x='461.14' y='237.57' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='10.84px' lengthAdjust='spacingAndGlyphs'>Fri</text>
+<text x='551.69' y='237.57' text-anchor='middle' style='font-size: 9.60px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='17.06px' lengthAdjust='spacingAndGlyphs'>Sun</text>
+<text transform='translate(13.26,132.46) rotate(-90)' text-anchor='middle' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='86.67px' lengthAdjust='spacingAndGlyphs'>Mean daily revenue</text>
+<text x='44.60' y='31.56' style='font-size: 10.00px;fill: #52514E; font-family: Helvetica, Arial, sans-serif;' textLength='191.50px' lengthAdjust='spacingAndGlyphs'>Mean revenue per trading day, by weekday.</text>
+<text x='44.60' y='15.45' style='font-size: 13.00px; font-weight: bold;fill: #0B0B0B; font-family: Helvetica, Arial, sans-serif;' textLength='407.25px' lengthAdjust='spacingAndGlyphs'>A weekday business: revenue peaks midweek, Saturdays are dark</text>
+<text x='44.60' y='251.47' style='font-size: 8.00px;fill: #898781; font-family: Helvetica, Arial, sans-serif;' textLength='279.02px' lengthAdjust='spacingAndGlyphs'>No Saturday trading appears anywhere in the data - the bar is absent, not zero.</text>
 </g>
 </g>
 </svg>
