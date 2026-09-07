@@ -74,8 +74,18 @@ knitr::kable(
 `r format(cleaned$rows_in, big.mark = ",")` raw rows become
 `r format(cleaned$rows_out, big.mark = ",")` clean sales lines
 (`r percent(1 - cleaned$rows_out / cleaned$rows_in, accuracy = 0.1)` dropped),
-worth `r label_gbp(total_revenue)` in revenue. Two caveats worth stating up
-front:
+worth `r label_gbp(total_revenue)` in revenue.
+
+**Matching coverage:** `r format(cleaned$audit$rows_dropped[2], big.mark = ",")`
+sale lines were matched one-to-one to
+`r format(cleaned$audit$rows_dropped[1], big.mark = ",")` credit-note lines,
+or `r percent(cleaned$audit$rows_dropped[2] / cleaned$audit$rows_dropped[1], accuracy = 0.1)`
+of all credit-note lines. The denominator includes every C-prefixed line,
+including lines that are ineligible for matching. Matching happens before
+service-code filtering, so this is process coverage, not the share of product
+returns whose value was recovered. Unmatched and partial credits are not netted.
+
+Two caveats worth stating up front:
 
 - **Netting is exact-match only.** A credit note nets a sale only when
   customer, product, quantity and price all agree; partial returns and
