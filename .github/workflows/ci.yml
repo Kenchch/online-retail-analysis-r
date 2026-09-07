@@ -28,25 +28,11 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Install project dependencies
-        uses: r-lib/actions/setup-r-dependencies@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
-        with:
-          packages: any::sessioninfo
-          extra-packages: |
-            any::readr
-            any::dplyr
-            any::lubridate
-            any::ggplot2
-            any::scales
-            any::svglite
-            any::stringr
-            any::DBI
-            any::RSQLite
-            any::zoo
-            any::forecast
-            any::knitr
-            any::rmarkdown
-            any::digest
+      # renv.lock pins every package to the version the committed tables were
+      # produced with, so a CRAN release cannot quietly change the analysis.
+      # It also replaces the list that used to be repeated here: the lockfile
+      # is now the single place the dependencies are written down.
+      - uses: r-lib/actions/setup-renv@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
 
       - name: Download and verify source data
         run: Rscript R/get_data.R
