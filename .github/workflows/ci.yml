@@ -34,6 +34,10 @@ jobs:
       # is now the single place the dependencies are written down.
       - uses: r-lib/actions/setup-renv@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
 
+      # setup-r-dependencies used to bring pandoc in as a side effect; setup-renv
+      # does not, and rmarkdown::render needs it.
+      - uses: r-lib/actions/setup-pandoc@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
+
       - name: Download and verify source data
         run: Rscript R/get_data.R
 
