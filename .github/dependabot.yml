@@ -1,0 +1,11 @@
+version: 2
+
+# Dependabot has no R ecosystem, so this watches the workflow actions only;
+# R package versions are the lockfile's job. Monthly keeps the noise low
+# enough to actually read.
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
