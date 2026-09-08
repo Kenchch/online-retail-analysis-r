@@ -43,11 +43,9 @@ before its timestamp. Same-minute matches are allowed because the source
 timestamp has minute precision, with input row order breaking ties. An
 earlier credit cannot cancel a future sale.
 
-**Correction (2026-09-05):** enforcing this chronological rule restores
-263 sales lines and £6,299.05 compared with the previous report. The old
-code matched credit counts over the entire observation window; all
-tables and figures below have been regenerated with chronological
-matching.
+**Correction (2026-09-05):** the chronological rule replaced
+whole-window matching, restoring 263 sale lines and £6,299.05 — see
+[`CHANGELOG.md`](CHANGELOG.md).
 
 ``` r
 knitr::kable(
@@ -65,6 +63,12 @@ knitr::kable(
 | Service charges / adjustments (postage, fees, manual entries) | 2,284 | 0.4% |
 | Non-positive quantity (stock corrections without a credit note) | 1,336 | 0.2% |
 | Non-positive unit price (damaged / unsaleable write-offs) | 1,165 | 0.2% |
+
+Each count is conditional on the rules above it, which matters most for
+the service rule: 2,328 sale lines carry a service code, but the audit
+records 2,284 — the other 44 were cancelled by a credit note and taken
+by rule 2 first. Reading the audit as “how many service lines are in the
+file” would be wrong by that many.
 
 541,909 raw rows become 525,049 clean sales lines (3.1% dropped), worth
 £9.88m in revenue.
@@ -390,7 +394,15 @@ ggplot() +
     )
   ) +
   theme_retail() +
-  theme(legend.position = c(0.17, 0.85), legend.background = element_blank())
+  # legend.position.inside, not legend.position = c(x, y): ggplot2 3.5 split
+  # the two, and coordinates now belong to the second. The old form still
+  # renders silently under the pinned 4.0.3 -- checked, not assumed -- so this
+  # is following the current API rather than clearing a warning.
+  theme(
+    legend.position.inside = c(0.17, 0.85),
+    legend.position = "inside",
+    legend.background = element_blank()
+  )
 ```
 
 ![](analysis_files/figure-gfm/forecast-1.svg)<!-- -->

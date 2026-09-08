@@ -104,21 +104,28 @@ how it arrives.
 
 ## Running it
 
-Requires R (≥ 4.3) with: readr, dplyr (≥ 1.1.1), lubridate, ggplot2, scales, svglite,
-stringr, DBI, RSQLite, zoo, forecast, knitr, rmarkdown, digest — all available as
-Debian/Ubuntu `r-cran-*` packages or from CRAN — plus pandoc for knitting.
-Run everything from the project root:
+Requires R (≥ 4.3) and pandoc for knitting. The R packages, and the exact
+versions the committed outputs were produced with, are in
+[`renv.lock`](renv.lock) — listing them here as well would be a second copy
+free to go stale. Run everything from the project root.
 
-Install dependencies once before using the quick-start commands:
+Install the dependencies once, from the lockfile:
 
 ```r
-install.packages(c("readr", "dplyr", "lubridate", "ggplot2", "scales",
-  "svglite", "stringr", "DBI", "RSQLite", "zoo", "forecast", "knitr",
-  "rmarkdown", "digest"), repos = "https://cloud.r-project.org")
+renv::restore()
 ```
 
+That installs the versions the committed tables and report were produced with.
+The hand-typed `install.packages()` this replaces asked CRAN for whatever it
+serves today, which is a different set from the one `renv.lock` pins -- and it
+was a third copy of the dependency list, so it could go stale without anything
+noticing. `renv.lock` is now the only place the dependencies are written down;
+`_dependencies.R` exists so renv's static scan can see `svglite`, which nothing
+calls by name.
+
 The `digest` package supplies SHA-256 on every platform. Download verification
-never falls back to file size, and cache fingerprints never fall back to modification time.
+never falls back to file size, and cache fingerprints never fall back to
+modification time.
 
 ```sh
 Rscript R/get_data.R       # fetch + verify the raw data
@@ -131,15 +138,21 @@ Rscript R/verify_outputs.R # compare committed summary tables with current code
 
 ```
 ├── README.md            this file
+├── CHANGELOG.md         what changed and when, including corrections
 ├── analysis.Rmd         the report source
 ├── analysis.md          the knitted report (committed - read this)
 ├── run_analysis.R       one-command driver: clean -> SQL -> tables -> knit
 ├── R/
 │   ├── functions.R      all shared logic: load, clean, SQL layer, analysis, theme
-│   └── get_data.R       sha256-verified data fetch
+│   ├── get_data.R       sha256-verified data fetch
+│   └── verify_outputs.R checks the committed tables against the current code
 ├── sql/queries.sql      the SQL, as SQL - named queries parsed and run from R
 ├── tests/               stopifnot()-based unit tests + runner
 ├── output/              committed summary tables (one CSV per SQL query + audit)
+├── renv.lock            the pinned package versions; `renv::restore()` reads this
+├── renv/                renv's own machinery (activate.R, settings)
+├── .Rprofile            activates renv on startup, so a session gets the pins
+├── _dependencies.R      declares svglite, which renv's static scan cannot see
 ├── data/raw/            the downloaded input (gitignored)
 └── cache/               fingerprinted local intermediates (gitignored)
 ```
