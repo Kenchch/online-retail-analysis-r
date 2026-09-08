@@ -14,7 +14,11 @@ source(file.path("R", "functions.R"))
 # SVG figures: crisp at any zoom, text-diffable in review, and they render
 # natively in GitHub-flavoured markdown.
 knitr::opts_chunk$set(
-  echo = TRUE, message = FALSE, warning = FALSE,
+  # warning = TRUE: a deprecation or a coercion warning is a fact about this
+  # analysis, and hiding it means the committed report looks clean while the
+  # next package upgrade is already telling you something. messages stay off --
+  # those are dplyr's "joining by" chatter, not findings.
+  echo = TRUE, message = FALSE, warning = TRUE,
   fig.width = 8.5, fig.height = 4.2, dev = "svglite",
   dev.args = list(bg = PAL$surface)
 )
@@ -57,10 +61,9 @@ each consumes the latest unused sale at or before its timestamp. Same-minute
 matches are allowed because the source timestamp has minute precision, with
 input row order breaking ties. An earlier credit cannot cancel a future sale.
 
-**Correction (2026-09-05):** enforcing this chronological rule restores 263
-sales lines and £6,299.05 compared with the previous report. The old code
-matched credit counts over the entire observation window; all tables and
-figures below have been regenerated with chronological matching.
+**Correction (2026-09-05):** the chronological rule replaced whole-window
+matching, restoring 263 sale lines and £6,299.05 — see
+[`CHANGELOG.md`](CHANGELOG.md).
 
 ```{r cleaning-audit}
 knitr::kable(
@@ -70,6 +73,14 @@ knitr::kable(
   format.args = list(big.mark = ",")
 )
 ```
+
+Each count is conditional on the rules above it, which matters most for the
+service rule: `r format(cleaned$netting$service_sale_lines, big.mark = ",")`
+sale lines carry a service code, but the audit records
+`r format(cleaned$audit$rows_dropped[3], big.mark = ",")` — the other
+`r cleaned$netting$service_sale_lines - cleaned$audit$rows_dropped[3]` were
+cancelled by a credit note and taken by rule 2 first. Reading the audit as
+"how many service lines are in the file" would be wrong by that many.
 
 `r format(cleaned$rows_in, big.mark = ",")` raw rows become
 `r format(cleaned$rows_out, big.mark = ",")` clean sales lines
@@ -376,7 +387,15 @@ ggplot() +
     )
   ) +
   theme_retail() +
-  theme(legend.position = c(0.17, 0.85), legend.background = element_blank())
+  # legend.position.inside, not legend.position = c(x, y): ggplot2 3.5 split
+  # the two, and coordinates now belong to the second. The old form still
+  # renders silently under the pinned 4.0.3 -- checked, not assumed -- so this
+  # is following the current API rather than clearing a warning.
+  theme(
+    legend.position.inside = c(0.17, 0.85),
+    legend.position = "inside",
+    legend.background = element_blank()
+  )
 ```
 
 Two modelling choices are doing the honest work here. The model is fit only

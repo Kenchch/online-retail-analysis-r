@@ -199,6 +199,11 @@ clean_retail <- function(raw) {
 
   netting <- list(
     credit_lines_total = nrow(credits),
+    # Sale-side service lines in the input, which is NOT what the audit's
+    # service rule reports: rules apply in order, so lines already taken by
+    # credit matching never reach it. The report states the gap rather than
+    # letting the audit be read as a census.
+    service_sale_lines = sum(toupper(raw$stock_code[!is_credit]) %in% SERVICE_CODES),
     credit_lines_service = sum(service_credit),
     credit_lines_eligible = sum(!is.na(credits$customer_id) & credits$quantity < 0),
     matched_lines = matched_rows,
