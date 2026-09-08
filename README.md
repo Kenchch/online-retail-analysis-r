@@ -55,6 +55,21 @@ of sales made before the window opens — so they drop out on their own rules
 instead. Revenue here is net of cleanly cancelled sales and still gross of
 messy returns, which the report states and this quantifies.
 
+One number cannot carry that caveat, so the report states three:
+
+| Measure | Revenue | Basis |
+|---|---:|---|
+| Gross positive product sales | £10,272,118.87 | Sales lines only; service codes and non-positive rows removed |
+| **Net of matched credit notes (headline)** | **£9,883,659.86** | 2,787 of 9,288 credit lines matched one-to-one |
+| Net of every product credit note (floor) | £9,793,394.69 | Every product credit subtracted, matched or not |
+
+The floor is a bound rather than an alternative headline: it subtracts credits
+for sales made before this window opened, whose matching sale is not in the
+file at all, so it removes value the gross figure never contained. The true net
+is somewhere between the two, and neither this README nor the report claims to
+know where. All three are computed in `clean_retail()` and rendered into
+[`analysis.md`](analysis.md) from the same values.
+
 ## Reconciliation with retail-ai-pipeline
 
 This repository and
