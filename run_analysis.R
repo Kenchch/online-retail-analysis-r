@@ -34,6 +34,17 @@ write_csv(cleaned$audit, file.path(out_dir, "cleaning_audit.csv"))
 for (name in names(results)) {
   write_csv(results[[name]], file.path(out_dir, paste0(name, ".csv")))
 }
+
+# The full environment record goes here rather than into analysis.md. Embedded
+# in the report it rewrote the platform, locale, BLAS and time-zone lines on
+# every machine, so a git diff on analysis.md reported a change on every run
+# even when every number was identical -- which is exactly the check CI needs
+# to be able to run. Not committed, for the same reason it was moved.
+writeLines(
+  sub("[[:blank:]]+$", "", capture.output(sessionInfo())),
+  file.path(out_dir, "session_info.txt")
+)
+
 message("  -> ", out_dir)
 
 message("== 4/4 Knit report ====================================")

@@ -76,6 +76,23 @@ matching. Matching happens before service-code filtering, so this is
 process coverage, not the share of product returns whose value was
 recovered. Unmatched and partial credits are not netted.
 
+**Three measures, because one number cannot carry the caveat.** The
+headline here is net of *matched* credits only. The credits that could
+not be paired off are still out there, and the headline cannot be judged
+without knowing what they are worth:
+
+| Measure | Revenue | Basis |
+|:---|:---|---:|
+| Gross positive product sales | £10,272,118.87 | Sales lines only; service codes and non-positive rows removed |
+| Net of matched credit notes (headline) | £9,883,659.86 | 2,787 of 9,288 credit lines matched one-to-one |
+| Net of every product credit note (floor) | £9,793,394.69 | Every product credit subtracted, matched or not |
+
+The floor is a bound, not an alternative headline: it subtracts credits
+for sales made before this window opened, whose matching sale is not in
+the file at all, so it removes value the gross figure never contained.
+The true net sits between the two, and this report does not claim to
+know where.
+
 Two caveats worth stating up front:
 
 - **Netting is exact-match only.** A credit note nets a sale only when
@@ -398,47 +415,41 @@ model on the same data.
     Rscript tests/run_tests.R  # unit tests for cleaning + SQL plumbing
     Rscript run_analysis.R     # clean -> SQL -> tables -> knit this report
 
+The packages this report is built with, and the versions
+[`renv.lock`](renv.lock) pins them to:
+
 ``` r
-cat(sub("[[:blank:]]+$", "", capture.output(sessionInfo())), sep = "\n")
+attached <- sessionInfo()$otherPkgs
+tibble(
+  Package = names(attached),
+  Version = vapply(attached, function(p) p$Version, character(1))
+) |>
+  arrange(Package) |>
+  knitr::kable(row.names = FALSE)
 ```
 
-    ## R version 4.6.1 (2026-06-24)
-    ## Platform: x86_64-pc-linux-gnu
-    ## Running under: Ubuntu 24.04.4 LTS
-    ## 
-    ## Matrix products: default
-    ## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
-    ## LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
-    ## 
-    ## locale:
-    ##  [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8
-    ##  [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8
-    ##  [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C
-    ## [10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C
-    ## 
-    ## time zone: UTC
-    ## tzcode source: system (glibc)
-    ## 
-    ## attached base packages:
-    ## [1] stats     graphics  grDevices datasets  utils     methods   base
-    ## 
-    ## other attached packages:
-    ## [1] forecast_9.0.2  zoo_1.9-0       RSQLite_3.53.3  DBI_1.3.0
-    ## [5] scales_1.4.0    ggplot2_4.0.3   lubridate_1.9.5 dplyr_1.2.1
-    ## [9] readr_2.2.0
-    ## 
-    ## loaded via a namespace (and not attached):
-    ##  [1] generics_0.1.4     renv_1.2.4         stringi_1.8.9      lattice_0.23-1
-    ##  [5] hms_1.1.4          digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5
-    ##  [9] grid_4.6.1         timechange_0.4.0   RColorBrewer_1.1-3 fastmap_1.2.0
-    ## [13] blob_1.3.0         textshaping_1.0.5  cli_3.6.6          rlang_1.3.0
-    ## [17] crayon_1.5.3       bit64_4.8.6        withr_3.0.3        cachem_1.1.0
-    ## [21] yaml_2.3.12        tools_4.6.1        parallel_4.6.1     tzdb_0.5.0
-    ## [25] memoise_2.0.1      colorspace_2.1-3   vctrs_0.7.3        R6_2.6.1
-    ## [29] lifecycle_1.0.5    stringr_1.6.0      bit_4.6.0          vroom_1.7.1
-    ## [33] pkgconfig_2.0.3    urca_1.3-4         pillar_1.11.1      gtable_0.3.6
-    ## [37] glue_1.8.1         Rcpp_1.1.2         systemfonts_1.3.2  xfun_0.60
-    ## [41] tibble_3.3.1       tidyselect_1.2.1   knitr_1.52         farver_2.1.2
-    ## [45] htmltools_0.5.9    nlme_3.1-171       labeling_0.4.3     svglite_2.2.2
-    ## [49] rmarkdown_2.32     timeDate_4052.112  fracdiff_1.5-4     compiler_4.6.1
-    ## [53] S7_0.2.2
+| Package   | Version |
+|:----------|:--------|
+| DBI       | 1.3.0   |
+| RSQLite   | 3.53.3  |
+| dplyr     | 1.2.1   |
+| forecast  | 9.0.2   |
+| ggplot2   | 4.0.3   |
+| lubridate | 1.9.5   |
+| readr     | 2.2.0   |
+| scales    | 1.4.0   |
+| zoo       | 1.9-0   |
+
+`run_analysis.R` writes the full `sessionInfo()` — R build, platform,
+locale, BLAS and time zone — to `output/session_info.txt` on the machine
+that runs it, rather than embedding it here. It used to be embedded, and
+that made this document unreproducible by construction: rendering it on
+a different machine rewrote the platform, locale, BLAS and time-zone
+lines, so a `git diff` on `analysis.md` reported a change on every run
+even when every number was identical. A record that cannot be compared
+cannot be checked, and a check that always fails is one nobody reads.
+That file is deliberately not committed, for the same reason.
+
+The package table above stays put because `renv.lock` pins those
+versions, so it is the same everywhere the lockfile is restored — which
+is the part of the environment the results actually depend on.

@@ -85,6 +85,39 @@ including lines that are ineligible for matching. Matching happens before
 service-code filtering, so this is process coverage, not the share of product
 returns whose value was recovered. Unmatched and partial credits are not netted.
 
+**Three measures, because one number cannot carry the caveat.** The headline
+here is net of *matched* credits only. The credits that could not be paired off
+are still out there, and the headline cannot be judged without knowing what
+they are worth:
+
+```{r revenue-measures, echo = FALSE}
+n <- cleaned$netting
+tibble(
+  Measure = c(
+    "Gross positive product sales",
+    "Net of matched credit notes (headline)",
+    "Net of every product credit note (floor)"
+  ),
+  Revenue = label_gbp_exact(
+    c(n$gross_value, n$net_of_matched_credits, n$net_of_all_product_credits)
+  ),
+  Basis = c(
+    "Sales lines only; service codes and non-positive rows removed",
+    sprintf(
+      "%s of %s credit lines matched one-to-one",
+      format(n$matched_lines, big.mark = ","),
+      format(n$credit_lines_total, big.mark = ",")
+    ),
+    "Every product credit subtracted, matched or not"
+  )
+) |> knitr::kable(align = "llr")
+```
+
+The floor is a bound, not an alternative headline: it subtracts credits for
+sales made before this window opened, whose matching sale is not in the file at
+all, so it removes value the gross figure never contained. The true net sits
+between the two, and this report does not claim to know where.
+
 Two caveats worth stating up front:
 
 - **Netting is exact-match only.** A credit note nets a sale only when
@@ -367,6 +400,29 @@ Rscript tests/run_tests.R  # unit tests for cleaning + SQL plumbing
 Rscript run_analysis.R     # clean -> SQL -> tables -> knit this report
 ```
 
+The packages this report is built with, and the versions
+[`renv.lock`](renv.lock) pins them to:
+
 ```{r session-info}
-cat(sub("[[:blank:]]+$", "", capture.output(sessionInfo())), sep = "\n")
+attached <- sessionInfo()$otherPkgs
+tibble(
+  Package = names(attached),
+  Version = vapply(attached, function(p) p$Version, character(1))
+) |>
+  arrange(Package) |>
+  knitr::kable(row.names = FALSE)
 ```
+
+`run_analysis.R` writes the full `sessionInfo()` — R build, platform, locale,
+BLAS and time zone — to `output/session_info.txt` on the machine that runs it,
+rather than embedding it here. It used to be embedded, and that made this
+document unreproducible by construction: rendering it on a different machine
+rewrote the platform, locale, BLAS and time-zone lines, so a `git diff` on
+`analysis.md` reported a change on every run even when every number was
+identical. A record that cannot be compared cannot be checked, and a check that
+always fails is one nobody reads. That file is deliberately not committed, for
+the same reason.
+
+The package table above stays put because `renv.lock` pins those versions, so
+it is the same everywhere the lockfile is restored — which is the part of the
+environment the results actually depend on.

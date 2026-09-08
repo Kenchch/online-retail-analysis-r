@@ -7,3 +7,8 @@ cache/
 
 # rmarkdown's local HTML preview; the committed report is analysis.md.
 analysis.html
+
+# The environment record run_analysis.R writes. Platform, locale, BLAS and time
+# zone differ on every machine; committing it would put the same unreproducible
+# lines back into git that moving them out of analysis.md was meant to remove.
+output/session_info.txt

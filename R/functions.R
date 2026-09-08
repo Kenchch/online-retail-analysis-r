@@ -174,7 +174,57 @@ clean_retail <- function(raw) {
 
   stopifnot(n_in - sum(audit_tbl$rows_dropped) == nrow(d))
 
-  list(lines = d, audit = audit_tbl, rows_in = n_in, rows_out = nrow(d))
+  # How far the netting reaches, in one place, so the report and the README can
+  # state it rather than describe it. The headline is net of MATCHED credits
+  # only, which is a choice with a cost: the credits that could not be paired
+  # off are still out there, and a reader cannot judge the headline without
+  # seeing how much they are worth.
+  #
+  # Service codes are excluded from the credit side for the same reason they
+  # are excluded from the sales side -- postage and fees are not product
+  # revenue, so netting them against product sales would compare two different
+  # things.
+  service_credit <- toupper(credits$stock_code) %in% SERVICE_CODES
+  product_credits <- credits[!service_credit, ]
+  matched_rows <- length(offset_rows)
+
+  # Gross is the sales side under the same product rules, which is what the
+  # two net measures are net OF. Recomputed here rather than taken from an
+  # intermediate, so the three numbers are guaranteed to be one arithmetic.
+  gross_lines <- raw[!is_credit, ] |>
+    filter(!(toupper(stock_code) %in% SERVICE_CODES), quantity > 0, unit_price > 0)
+  gross_value <- sum(gross_lines$quantity * gross_lines$unit_price)
+  net_matched <- sum(d$revenue)
+  all_credit_value <- sum(abs(product_credits$quantity) * product_credits$unit_price)
+
+  netting <- list(
+    credit_lines_total = nrow(credits),
+    credit_lines_service = sum(service_credit),
+    credit_lines_eligible = sum(!is.na(credits$customer_id) & credits$quantity < 0),
+    matched_lines = matched_rows,
+    matched_share_of_credit_lines = matched_rows / nrow(credits),
+    gross_value = gross_value,
+    matched_value = gross_value - net_matched,
+    net_of_matched_credits = net_matched,
+    all_product_credit_value = all_credit_value,
+    # A floor, not an alternative headline. It subtracts every product credit,
+    # including returns of sales made before the window opened, whose matching
+    # sale is not in this file at all -- so it removes value the gross figure
+    # never contained.
+    net_of_all_product_credits = gross_value - all_credit_value
+  )
+  # The identity only, with a tolerance. "Floor at or below headline" also
+  # holds, and is tested -- but as a bare inequality it is not safe to assert
+  # here: when every credit is matched the two are equal in exact arithmetic
+  # and differ in the last bit, because they are reached by different
+  # summation orders. Asserting it inside the pipeline turned a fixture where
+  # two credits cancel two of three identical sales into a hard failure.
+  stopifnot(abs(netting$gross_value - netting$matched_value - net_matched) < 0.01)
+
+  list(
+    lines = d, audit = audit_tbl, rows_in = n_in, rows_out = nrow(d),
+    netting = netting
+  )
 }
 
 file_sha256 <- function(path) {
@@ -383,5 +433,16 @@ label_gbp <- function(x) {
     } else {
       paste0("£", format(round(v), trim = TRUE, big.mark = ","))
     }
+  }, character(1))
+}
+
+# The three revenue measures are compared with each other and with the Python
+# pipeline's figure, and the differences between them are four- and five-figure
+# sums. label_gbp's "£10.27m" hides exactly the digits that comparison turns
+# on, so the reconciliation table gets its own formatter.
+label_gbp_exact <- function(x) {
+  vapply(x, function(v) {
+    if (is.na(v)) return(NA_character_)
+    paste0("£", formatC(v, format = "f", big.mark = ",", digits = 2))
   }, character(1))
 }

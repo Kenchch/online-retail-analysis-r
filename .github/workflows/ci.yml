@@ -36,7 +36,15 @@ jobs:
 
       # setup-r-dependencies used to bring pandoc in as a side effect; setup-renv
       # does not, and rmarkdown::render needs it.
+      #
+      # Pinned, because pandoc is part of the toolchain that produces the
+      # committed report: github_document goes .Rmd -> knitr -> markdown ->
+      # pandoc -> analysis.md, and pandoc normalises the markdown on the way
+      # through. An unpinned version would rewrap a table one day and fail the
+      # rebuild check below for a reason that has nothing to do with the data.
       - uses: r-lib/actions/setup-pandoc@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
+        with:
+          pandoc-version: "3.10"
 
       - name: Download and verify source data
         run: Rscript R/get_data.R
@@ -49,6 +57,31 @@ jobs:
 
       - name: Rebuild analysis and report
         run: Rscript run_analysis.R
+
+      # The committed report and tables must be what this data produces. Every
+      # figure quoted in README.md comes from one of these files, so a report
+      # that cannot be regenerated makes the README unverifiable.
+      #
+      # analysis_files/ is deliberately not in the list. The SVGs carry text
+      # laid out with the renderer's own font metrics, so their coordinates
+      # differ between platforms while describing identical data -- the same
+      # reason the sheep repository compares its CSVs and not its PNGs. The
+      # Linux-rendered figures are uploaded below so a reviewer can look at
+      # them; what is *checked* is everything whose bytes are supposed to be
+      # determined by the input.
+      #
+      # This became checkable when sessionInfo() moved out of the report: while
+      # it was embedded, this diff was guaranteed to fail on any machine but
+      # the one that last rendered it.
+      - name: The committed report must be what this data produces
+        run: |
+          git diff --exit-code -- analysis.md output/ || {
+            echo
+            echo "The rebuild changed analysis.md or output/. Either the"
+            echo "committed files were not regenerated after a change, or"
+            echo "something in the pipeline is not deterministic."
+            exit 1
+          }
 
       - name: Preserve the Linux-rendered report for review
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
