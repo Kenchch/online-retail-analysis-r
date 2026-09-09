@@ -9,7 +9,7 @@ test_unmatched_early_credit_does_not_consume_later_sale <- function() {
   d <- fixture()[c(1, 3), ]
   d$invoice_date <- c("12/1/2010 10:00", "12/1/2010 9:00")
   res <- clean_retail(d)
-  stopifnot(res$rows_out == 1, res$audit$rows_dropped[2] == 0)
+  stopifnot(res$rows_out == 1, rule_rows(res$audit, "Sales offset") == 0)
 }
 
 test_chronological_credits_match_each_sale_once <- function() {
@@ -18,7 +18,7 @@ test_chronological_credits_match_each_sale_once <- function() {
   d$invoice_date <- c("12/1/2010 8:00", "12/1/2010 10:00",
                       "12/1/2010 9:00", "12/1/2010 11:00")
   res <- clean_retail(d[c(4, 2, 3, 1), ])
-  stopifnot(res$rows_out == 0, res$audit$rows_dropped[2] == 2)
+  stopifnot(res$rows_out == 0, rule_rows(res$audit, "Sales offset") == 2)
 }
 
 test_same_minute_credit_is_eligible <- function() {

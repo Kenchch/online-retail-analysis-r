@@ -104,3 +104,50 @@ test_matched_share_uses_every_credit_line_as_its_denominator <- function() {
   )
   stopifnot(n$credit_lines_eligible <= n$credit_lines_total)
 }
+
+
+# The duplicate rule is the one that aligns this analysis with
+# retail-ai-pipeline, so what it does and does not remove is worth pinning.
+
+test_a_line_recorded_twice_counts_once <- function() {
+  d <- fixture()
+  d <- rbind(d, d[1, ])  # row 1 keyed a second time, identically
+  res <- clean_retail(d)
+
+  stopifnot(res$rows_in == nrow(fixture()) + 1)
+  stopifnot(rule_rows(res$audit, "Exact duplicate") == 1)
+  # And the revenue is the fixture's, not the fixture's plus one line.
+  stopifnot(
+    abs(res$netting$gross_value - clean_retail(fixture())$netting$gross_value) < 1e-9
+  )
+}
+
+test_twins_on_different_invoices_are_not_duplicates <- function() {
+  # Rows 1 and 2 of the fixture: same customer, product, quantity and price,
+  # different invoice numbers and different minutes. Two real sales. Collapsing
+  # them would delete revenue, which is the failure mode a naive "drop rows
+  # that look alike" rule has.
+  res <- clean_retail(fixture())
+  stopifnot(rule_rows(res$audit, "Exact duplicate") == 0)
+}
+
+test_the_duplicate_key_is_the_one_the_python_pipeline_uses <- function() {
+  # Both projects read the same file, and the whole point of this rule is that
+  # they agree afterwards. If the keys diverge the revenue figures diverge with
+  # them, silently.
+  stopifnot(identical(
+    sort(DUPLICATE_KEY),
+    sort(c("invoice_no", "stock_code", "quantity", "unit_price", "invoice_ts"))
+  ))
+}
+
+test_duplicates_are_removed_before_the_credit_matching <- function() {
+  # Order matters: a duplicated sale is a second candidate for a credit note to
+  # consume. If the duplicate rule ran after the netting, a credit would pair
+  # against a row that should not have existed, and the matched count would be
+  # inflated.
+  res <- clean_retail(fixture())
+  order <- res$audit$rule
+  stopifnot(grep("Exact duplicate", order, fixed = TRUE) <
+              grep("Sales offset", order, fixed = TRUE))
+}

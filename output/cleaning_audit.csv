@@ -1,6 +1,7 @@
 rule,rows_dropped,share_of_input
-Credit notes (InvoiceNo starting with 'C'),9288,0.017139409015166755
-"Sales offset by a matching credit note (same customer, product, quantity, price)",2787,0.00514292990151483
-"Service charges / adjustments (postage, fees, manual entries)",2284,0.004214729779354098
+"Exact duplicate lines (same invoice, product, quantity, price, timestamp)",5270,0.00972488000752894
+Credit notes (InvoiceNo starting with 'C'),9251,0.017071131869003837
+"Sales offset by a matching credit note (same customer, product, quantity, price)",2769,0.005109713992570708
+"Service charges / adjustments (postage, fees, manual entries)",2279,0.004205503137980731
 Non-positive quantity (stock corrections without a credit note),1336,0.0024653585749636934
-Non-positive unit price (damaged / unsaleable write-offs),1165,0.002149807439994538
+Non-positive unit price (damaged / unsaleable write-offs),1160,0.0021405807986211705

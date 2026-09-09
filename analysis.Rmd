@@ -47,7 +47,7 @@ command (`Rscript run_analysis.R`).
 ## Cleaning: every dropped row is accounted for
 
 The raw file is invoice *lines*, and it mixes real product sales with
-cancellations, postage charges, fees, and manual stock corrections. Five rules
+cancellations, postage charges, fees, and manual stock corrections. Six rules
 are applied in a fixed order; each row is counted against the first rule that
 removes it, so the audit reconciles exactly against the input.
 
@@ -77,20 +77,20 @@ knitr::kable(
 Each count is conditional on the rules above it, which matters most for the
 service rule: `r format(cleaned$netting$service_sale_lines, big.mark = ",")`
 sale lines carry a service code, but the audit records
-`r format(cleaned$audit$rows_dropped[3], big.mark = ",")` — the other
-`r cleaned$netting$service_sale_lines - cleaned$audit$rows_dropped[3]` were
-cancelled by a credit note and taken by rule 2 first. Reading the audit as
-"how many service lines are in the file" would be wrong by that many.
+`r format(rule_rows(cleaned$audit, "Service charges"), big.mark = ",")` — the other
+`r cleaned$netting$service_sale_lines - rule_rows(cleaned$audit, "Service charges")` were
+cancelled by a credit note and taken by the netting rule first. Reading the
+audit as "how many service lines are in the file" would be wrong by that many.
 
 `r format(cleaned$rows_in, big.mark = ",")` raw rows become
 `r format(cleaned$rows_out, big.mark = ",")` clean sales lines
 (`r percent(1 - cleaned$rows_out / cleaned$rows_in, accuracy = 0.1)` dropped),
 worth `r label_gbp(total_revenue)` in revenue.
 
-**Matching coverage:** `r format(cleaned$audit$rows_dropped[2], big.mark = ",")`
+**Matching coverage:** `r format(rule_rows(cleaned$audit, "Sales offset"), big.mark = ",")`
 sale lines were matched one-to-one to
-`r format(cleaned$audit$rows_dropped[1], big.mark = ",")` credit-note lines,
-or `r percent(cleaned$audit$rows_dropped[2] / cleaned$audit$rows_dropped[1], accuracy = 0.1)`
+`r format(rule_rows(cleaned$audit, "Credit notes"), big.mark = ",")` credit-note lines,
+or `r percent(rule_rows(cleaned$audit, "Sales offset") / rule_rows(cleaned$audit, "Credit notes"), accuracy = 0.1)`
 of all credit-note lines. The denominator includes every C-prefixed line,
 including lines that are ineligible for matching. Matching happens before
 service-code filtering, so this is process coverage, not the share of product

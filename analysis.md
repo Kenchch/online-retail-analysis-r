@@ -27,7 +27,7 @@ report that rebuilds from raw data with one command
 ## Cleaning: every dropped row is accounted for
 
 The raw file is invoice *lines*, and it mixes real product sales with
-cancellations, postage charges, fees, and manual stock corrections. Five
+cancellations, postage charges, fees, and manual stock corrections. Six
 rules are applied in a fixed order; each row is counted against the
 first rule that removes it, so the audit reconciles exactly against the
 input.
@@ -58,23 +58,24 @@ knitr::kable(
 
 | Rule (applied in order) | Rows dropped | Share of input |
 |:---|---:|:---|
-| Credit notes (InvoiceNo starting with ‘C’) | 9,288 | 1.7% |
-| Sales offset by a matching credit note (same customer, product, quantity, price) | 2,787 | 0.5% |
-| Service charges / adjustments (postage, fees, manual entries) | 2,284 | 0.4% |
+| Exact duplicate lines (same invoice, product, quantity, price, timestamp) | 5,270 | 1.0% |
+| Credit notes (InvoiceNo starting with ‘C’) | 9,251 | 1.7% |
+| Sales offset by a matching credit note (same customer, product, quantity, price) | 2,769 | 0.5% |
+| Service charges / adjustments (postage, fees, manual entries) | 2,279 | 0.4% |
 | Non-positive quantity (stock corrections without a credit note) | 1,336 | 0.2% |
-| Non-positive unit price (damaged / unsaleable write-offs) | 1,165 | 0.2% |
+| Non-positive unit price (damaged / unsaleable write-offs) | 1,160 | 0.2% |
 
 Each count is conditional on the rules above it, which matters most for
-the service rule: 2,328 sale lines carry a service code, but the audit
-records 2,284 — the other 44 were cancelled by a credit note and taken
-by rule 2 first. Reading the audit as “how many service lines are in the
-file” would be wrong by that many.
+the service rule: 2,323 sale lines carry a service code, but the audit
+records 2,279 — the other 44 were cancelled by a credit note and taken
+by the netting rule first. Reading the audit as “how many service lines
+are in the file” would be wrong by that many.
 
-541,909 raw rows become 525,049 clean sales lines (3.1% dropped), worth
-£9.88m in revenue.
+541,909 raw rows become 519,844 clean sales lines (4.1% dropped), worth
+£9.86m in revenue.
 
-**Matching coverage:** 2,787 sale lines were matched one-to-one to 9,288
-credit-note lines, or 30.0% of all credit-note lines. The denominator
+**Matching coverage:** 2,769 sale lines were matched one-to-one to 9,251
+credit-note lines, or 29.9% of all credit-note lines. The denominator
 includes every C-prefixed line, including lines that are ineligible for
 matching. Matching happens before service-code filtering, so this is
 process coverage, not the share of product returns whose value was
@@ -87,9 +88,9 @@ without knowing what they are worth:
 
 | Measure | Revenue | Basis |
 |:---|:---|---:|
-| Gross positive product sales | £10,272,118.87 | Sales lines only; service codes and non-positive rows removed |
-| Net of matched credit notes (headline) | £9,883,659.86 | 2,787 of 9,288 credit lines matched one-to-one |
-| Net of every product credit note (floor) | £9,793,394.69 | Every product credit subtracted, matched or not |
+| Gross positive product sales | £10,247,353.28 | Sales lines only; service codes and non-positive rows removed |
+| Net of matched credit notes (headline) | £9,861,394.40 | 2,769 of 9,251 credit lines matched one-to-one |
+| Net of every product credit note (floor) | £9,771,452.12 | Every product credit subtracted, matched or not |
 
 The floor is a bound, not an alternative headline: it subtracts credits
 for sales made before this window opened, whose matching sale is not in
@@ -104,7 +105,7 @@ Two caveats worth stating up front:
   returns of pre-window sales find no match and simply drop out. Revenue
   is therefore net of clean cancellations but still slightly *gross* of
   messy returns.
-- **A quarter of lines have no customer ID** (25.0% of clean lines —
+- **A quarter of lines have no customer ID** (25.3% of clean lines —
   guest checkouts). They stay in revenue figures but cannot be used for
   customer-level analysis, which is therefore based on identified
   revenue only.
@@ -136,19 +137,19 @@ knitr::kable(
 
 | Month | Revenue | Invoices | Identified customers | Revenue / invoice (£) | MoM growth (%) |
 |:---|:---|---:|---:|---:|:---|
-| 2010-12 | £769k | 1,542 | 883 | 498.92 | — |
-| 2011-01 | £567k | 1,073 | 737 | 528.25 | -26.3 |
-| 2011-02 | £506k | 1,089 | 756 | 464.74 | -10.7 |
-| 2011-03 | £684k | 1,431 | 970 | 478.04 | 35.2 |
-| 2011-04 | £511k | 1,226 | 849 | 416.40 | -25.4 |
-| 2011-05 | £734k | 1,652 | 1,051 | 444.37 | 43.8 |
-| 2011-06 | £730k | 1,512 | 986 | 482.86 | -0.5 |
-| 2011-07 | £684k | 1,445 | 945 | 473.29 | -6.3 |
-| 2011-08 | £717k | 1,336 | 933 | 536.47 | 4.8 |
-| 2011-09 | £1.02m | 1,808 | 1,254 | 564.06 | 42.3 |
-| 2011-10 | £1.07m | 1,986 | 1,356 | 539.39 | 5 |
-| 2011-11 | £1.44m | 2,740 | 1,657 | 527.31 | 34.9 |
-| 2011-12 | £446k | 811 | 610 | 550.12 | -69.1 |
+| 2010-12 | £767k | 1,542 | 883 | 497.47 | — |
+| 2011-01 | £565k | 1,073 | 737 | 526.80 | -26.3 |
+| 2011-02 | £505k | 1,089 | 756 | 463.75 | -10.7 |
+| 2011-03 | £683k | 1,431 | 970 | 477.04 | 35.2 |
+| 2011-04 | £510k | 1,226 | 849 | 415.72 | -25.3 |
+| 2011-05 | £733k | 1,652 | 1,051 | 443.62 | 43.8 |
+| 2011-06 | £729k | 1,511 | 986 | 482.39 | -0.5 |
+| 2011-07 | £683k | 1,445 | 945 | 472.50 | -6.3 |
+| 2011-08 | £715k | 1,336 | 933 | 535.50 | 4.8 |
+| 2011-09 | £1.02m | 1,808 | 1,254 | 562.88 | 42.2 |
+| 2011-10 | £1.07m | 1,987 | 1,356 | 538.61 | 5.2 |
+| 2011-11 | £1.44m | 2,740 | 1,657 | 525.08 | 34.4 |
+| 2011-12 | £445k | 811 | 610 | 548.88 | -69.1 |
 
 ``` r
 monthly <- sql$monthly_summary |>
@@ -182,7 +183,7 @@ ggplot(monthly, aes(month_date, revenue)) +
 
 The shape is a giftware wholesaler’s year in one picture: an
 unremarkable first half, an autumn ramp as retail customers stock up for
-Christmas, a 34.9% November jump — and a December bar that only looks
+Christmas, a 34.4% November jump — and a December bar that only looks
 like a crash because the data stops on the 9th (its `trading_days`
 column in [`output/monthly_growth.csv`](output/monthly_growth.csv) says
 the same to anyone reading the CSV without this caption).
@@ -244,16 +245,16 @@ knitr::kable(
 
 | Stock code | Description                        | Revenue |  Units | Invoices |
 |:-----------|:-----------------------------------|:--------|-------:|---------:|
-| 22423      | REGENCY CAKESTAND 3 TIER           | £171k   | 13,537 |    1,948 |
-| 85123A     | WHITE HANGING HEART T-LIGHT HOLDER | £100k   | 35,428 |    2,253 |
-| 47566      | PARTY BUNTING                      | £99k    | 18,103 |    1,675 |
-| 85099B     | JUMBO BAG RED RETROSPOT            | £93k    | 47,593 |    2,078 |
-| 23084      | RABBIT NIGHT LIGHT                 | £67k    | 30,758 |      991 |
-| 22086      | PAPER CHAIN KIT 50’S CHRISTMAS     | £64k    | 18,948 |    1,152 |
-| 84879      | ASSORTED COLOUR BIRD ORNAMENT      | £59k    | 36,432 |    1,452 |
-| 79321      | CHILLI LIGHTS                      | £54k    | 10,229 |      658 |
-| 22197      | SMALL POPCORN HOLDER               | £51k    | 56,699 |    1,389 |
-| 22502      | PICNIC BASKET WICKER SMALL         | £51k    |  1,872 |      460 |
+| 22423      | REGENCY CAKESTAND 3 TIER           | £170k   | 13,509 |    1,948 |
+| 85123A     | WHITE HANGING HEART T-LIGHT HOLDER | £100k   | 35,409 |    2,253 |
+| 47566      | PARTY BUNTING                      | £99k    | 18,091 |    1,675 |
+| 85099B     | JUMBO BAG RED RETROSPOT            | £93k    | 47,490 |    2,078 |
+| 23084      | RABBIT NIGHT LIGHT                 | £67k    | 30,709 |      991 |
+| 22086      | PAPER CHAIN KIT 50’S CHRISTMAS     | £64k    | 18,922 |    1,152 |
+| 84879      | ASSORTED COLOUR BIRD ORNAMENT      | £59k    | 36,333 |    1,452 |
+| 79321      | CHILLI LIGHTS                      | £54k    | 10,225 |      658 |
+| 22197      | SMALL POPCORN HOLDER               | £51k    | 56,676 |    1,389 |
+| 22502      | PICNIC BASKET WICKER SMALL         | £51k    |  1,869 |      460 |
 
 ``` r
 top <- sql$top_products |>
@@ -319,8 +320,8 @@ knitr::kable(
 
 | Customer type | Identified customers | Revenue | Share of identified revenue (%) |
 |:--------------|---------------------:|:--------|--------------------------------:|
-| one-off       |                1,555 | £622k   |                             7.4 |
-| repeat        |                2,769 | £7.75m  |                            92.6 |
+| one-off       |                1,555 | £619k   |                             7.4 |
+| repeat        |                2,769 | £7.73m  |                            92.6 |
 
 ``` r
 pareto <- customer_pareto(lines)

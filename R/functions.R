@@ -82,6 +82,31 @@ read_retail_raw <- function(path = raw_csv_path()) {
 # Clean
 # ---------------------------------------------------------------------------
 
+# The same tuple retail-ai-pipeline quarantines duplicate lines on. Written
+# down here rather than inline so the two projects can be checked against each
+# other, and so a change on one side is a visible change rather than a silent
+# divergence in the revenue figures.
+DUPLICATE_KEY <- c("invoice_no", "stock_code", "quantity", "unit_price", "invoice_ts")
+
+
+#' Rows a named cleaning rule removed.
+#'
+#' By name, not by position. Rules are applied in a fixed order and that order
+#' has changed: inserting the duplicate rule at the front shifted every
+#' rows_dropped[n] in this repository by one, and a positional read would have
+#' gone on working while reporting the wrong rule.
+rule_rows <- function(audit, key) {
+  hit <- grep(key, audit$rule, fixed = TRUE)
+  if (length(hit) != 1) {
+    stop(sprintf(
+      "'%s' matches %d cleaning rules, not exactly one: %s",
+      key, length(hit), paste(audit$rule, collapse = " | ")
+    ))
+  }
+  audit$rows_dropped[hit]
+}
+
+
 # Charges, fees and adjustments that share the invoice-line table with real
 # product sales. Kept as an explicit, documented list rather than a pattern:
 # codes like DCGSSGIRL or gift_0001_20 look "non-standard" but are genuine
@@ -100,11 +125,15 @@ SERVICE_CODES <- c(
 #' "rows removed by this rule that survived the rules above it" and the audit
 #' reconciles exactly: rows_in - sum(dropped) == rows_out.
 #'
-#' The credit-note netting in rule 2 exists because this dataset's most
-#' spectacular lines are phantoms: the two largest orders of the year (80,995
-#' and 74,215 units) were both cancelled minutes after being keyed in. Simply
-#' dropping the credit notes would leave those "sales" in every headline
-#' number; matching each credit back to a sale removes both sides of the pair.
+#' The credit-note netting exists because this dataset's most spectacular lines
+#' are phantoms: the two largest orders of the year (80,995 and 74,215 units)
+#' were both cancelled minutes after being keyed in. Simply dropping the credit
+#' notes would leave those "sales" in every headline number; matching each
+#' credit back to a sale removes both sides of the pair.
+#'
+#' Read the audit with rule_rows(), not by position. Rules have been inserted
+#' before, and every `rows_dropped[2]` in a document or a test then silently
+#' started reporting a different rule.
 clean_retail <- function(raw) {
   audit <- list()
   step <- function(d, rule, keep) {
@@ -119,12 +148,37 @@ clean_retail <- function(raw) {
   stopifnot(!anyNA(d$invoice_ts))
   n_in <- nrow(d)
 
-  # Rule 1: pull the credit notes out (kept aside for rule 2's matching).
+  # Rule 1: the same line recorded twice. Same invoice, product, quantity,
+  # price and timestamp is one sale keyed twice, not two sales -- an invoice
+  # cannot contain the same product at the same price and quantity at the same
+  # minute as two separate events.
+  #
+  # It runs first, before the credit matching, because a duplicated sale is a
+  # second candidate for a credit note to consume. Removing them afterwards
+  # would leave the matching to pair credits against rows that should not have
+  # existed.
+  #
+  # This is the key retail-ai-pipeline quarantines on, deliberately: the two
+  # projects read the same file, and the gap between their revenue figures was
+  # exactly these rows.
+  d <- step(
+    d,
+    "Exact duplicate lines (same invoice, product, quantity, price, timestamp)",
+    !duplicated(d[, DUPLICATE_KEY])
+  )
+
+  # Rule 2: pull the credit notes out (kept aside for rule 3's matching).
+  # `deduped`, not `raw`: the netting block below indexes the sales side with
+  # this mask, and `is_credit` is computed after the duplicate rule has already
+  # removed rows -- so against `raw` it is the wrong length and, worse, would
+  # line up against the wrong rows if the lengths ever coincided. The test that
+  # keys one fixture line twice is what surfaced it.
+  deduped <- d
   is_credit <- grepl("^C", d$invoice_no)
   credits <- d[is_credit, ]
   d <- step(d, "Credit notes (InvoiceNo starting with 'C')", !is_credit)
 
-  # Rule 2: net out the sales those credit notes cancel. A credit is matched
+  # Rule 3: net out the sales those credit notes cancel. A credit is matched
   # 1:1 to a sale line with the same customer, product, quantity and price;
   # process credits in timestamp order and take the latest unused sale at or
   # before each credit. Equal timestamps are eligible because source times
@@ -191,7 +245,7 @@ clean_retail <- function(raw) {
   # Gross is the sales side under the same product rules, which is what the
   # two net measures are net OF. Recomputed here rather than taken from an
   # intermediate, so the three numbers are guaranteed to be one arithmetic.
-  gross_lines <- raw[!is_credit, ] |>
+  gross_lines <- deduped[!is_credit, ] |>
     filter(!(toupper(stock_code) %in% SERVICE_CODES), quantity > 0, unit_price > 0)
   gross_value <- sum(gross_lines$quantity * gross_lines$unit_price)
   net_matched <- sum(d$revenue)
@@ -203,7 +257,9 @@ clean_retail <- function(raw) {
     # service rule reports: rules apply in order, so lines already taken by
     # credit matching never reach it. The report states the gap rather than
     # letting the audit be read as a census.
-    service_sale_lines = sum(toupper(raw$stock_code[!is_credit]) %in% SERVICE_CODES),
+    service_sale_lines = sum(
+      toupper(deduped$stock_code[!is_credit]) %in% SERVICE_CODES
+    ),
     credit_lines_service = sum(service_credit),
     credit_lines_eligible = sum(!is.na(credits$customer_id) & credits$quantity < 0),
     matched_lines = matched_rows,
