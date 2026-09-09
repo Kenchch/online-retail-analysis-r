@@ -26,20 +26,33 @@ fixture <- function() {
   )
 }
 
-# The fixture, rule by rule:
-#   row 3 (C536379)  credit note matching rows 1-2               -> rule 1
-#   row 4 (C536380)  credit note with no matching sale           -> rule 1
-#   one of rows 1-2  the sale that credit note cancels (1:1)     -> rule 2
-#   row 5 (POST)     service charge                              -> rule 3
-#   row 6 (qty -20)  stock correction without a credit note      -> rule 4
-#   row 8 (price 0)  unsaleable write-off                        -> rule 5
+# The fixture, rule by rule. Rows 1 and 2 are the same product, quantity and
+# price but on different invoices, so they are twins rather than duplicates and
+# the duplicate rule leaves both -- which is the distinction that rule has to
+# get right.
+#   (none)           exact duplicate lines                       -> Exact duplicate
+#   row 3 (C536379)  credit note matching rows 1-2               -> Credit notes
+#   row 4 (C536380)  credit note with no matching sale           -> Credit notes
+#   one of rows 1-2  the sale that credit note cancels (1:1)     -> Sales offset
+#   row 5 (POST)     service charge                              -> Service charges
+#   row 6 (qty -20)  stock correction without a credit note      -> Non-positive quantity
+#   row 8 (price 0)  unsaleable write-off                        -> Non-positive unit price
 # Survivors: one of the twin 85123A sales, the gift voucher, the guest sale.
 
 test_cleaning_rules <- function() {
   res <- clean_retail(fixture())
 
   stopifnot(res$rows_in == 9, res$rows_out == 3, nrow(res$lines) == 3)
-  stopifnot(all(res$audit$rows_dropped == c(2, 1, 1, 1, 1)))
+  # By name. This assertion was a positional vector, and inserting the
+  # duplicate rule at the front is exactly what it could not survive.
+  stopifnot(
+    rule_rows(res$audit, "Exact duplicate") == 0,
+    rule_rows(res$audit, "Credit notes") == 2,
+    rule_rows(res$audit, "Sales offset") == 1,
+    rule_rows(res$audit, "Service charges") == 1,
+    rule_rows(res$audit, "Non-positive quantity") == 1,
+    rule_rows(res$audit, "Non-positive unit price") == 1
+  )
 
   # The credit was for ONE sale of 6 units; only one of the two identical
   # sales may be netted out - the later one, matching how cancellations
@@ -68,8 +81,8 @@ test_rule_order_reported_sequentially <- function() {
   d <- fixture()
   d$invoice_no[5] <- "C536381"  # the POST line is now also a credit note
   res <- clean_retail(d)
-  stopifnot(res$audit$rows_dropped[1] == 3)  # all three credits counted here
-  stopifnot(res$audit$rows_dropped[3] == 0)  # not counted again as a service line
+  stopifnot(rule_rows(res$audit, "Credit notes") == 3)  # all three counted here
+  stopifnot(rule_rows(res$audit, "Service charges") == 0)  # not counted twice
   stopifnot(res$rows_in - sum(res$audit$rows_dropped) == res$rows_out)
 }
 
@@ -90,7 +103,10 @@ test_netting_is_one_to_one <- function() {
   res <- clean_retail(d)
   stopifnot(nrow(res$lines) == 1)
   stopifnot(format(res$lines$invoice_ts, "%H:%M") == "08:00")
-  stopifnot(res$audit$rows_dropped[1] == 2, res$audit$rows_dropped[2] == 2)
+  stopifnot(
+    rule_rows(res$audit, "Credit notes") == 2,
+    rule_rows(res$audit, "Sales offset") == 2
+  )
 }
 
 test_sql_roundtrip <- function() {

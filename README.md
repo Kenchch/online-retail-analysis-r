@@ -12,7 +12,7 @@ on GitHub with all figures and tables.
 
 | Input | Audited output | Reproducibility |
 |---|---|---|
-| **541,909** invoice lines | **525,049** clean sales lines · **£9.88m** revenue | SHA-256-pinned download · fingerprinted cache · automated regression tests |
+| **541,909** invoice lines | **519,844** clean sales lines · **£9.86m** revenue | SHA-256-pinned download · fingerprinted cache · automated regression tests |
 
 ![Monthly revenue: a flat first half followed by a steep autumn rise](analysis_files/figure-gfm/monthly-revenue-1.svg)
 
@@ -47,9 +47,9 @@ source records only minutes, with input row order breaking ties. Thus both sides
 are removed and the "top products" are things the business actually sold.
 
 How far that netting reaches is worth a number rather than an adjective.
-[`output/cleaning_audit.csv`](output/cleaning_audit.csv) records **2,787**
-sales removed by a matching credit against **9,288** credit lines in the file:
-the exact-match rule accounts for **30%** of them. The rest are credits that
+[`output/cleaning_audit.csv`](output/cleaning_audit.csv) records **2,769**
+sales removed by a matching credit against **9,251** credit lines in the file:
+the exact-match rule accounts for **29.9%** of them. The rest are credits that
 cannot pair off — service charges and adjustments, partial returns, and returns
 of sales made before the window opens — so they drop out on their own rules
 instead. Revenue here is net of cleanly cancelled sales and still gross of
@@ -59,9 +59,9 @@ One number cannot carry that caveat, so the report states three:
 
 | Measure | Revenue | Basis |
 |---|---:|---|
-| Gross positive product sales | £10,272,118.87 | Sales lines only; service codes and non-positive rows removed |
-| **Net of matched credit notes (headline)** | **£9,883,659.86** | 2,787 of 9,288 credit lines matched one-to-one |
-| Net of every product credit note (floor) | £9,793,394.69 | Every product credit subtracted, matched or not |
+| Gross positive product sales | £10,247,353.28 | Sales lines only; service codes and non-positive rows removed |
+| **Net of matched credit notes (headline)** | **£9,861,394.40** | 2,769 of 9,251 credit lines matched one-to-one |
+| Net of every product credit note (floor) | £9,771,452.12 | Every product credit subtracted, matched or not |
 
 The floor is a bound rather than an alternative headline: it subtracts credits
 for sales made before this window opened, whose matching sale is not in the
@@ -74,20 +74,33 @@ know where. All three are computed in `clean_retail()` and rendered into
 
 This repository and
 [`retail-ai-pipeline`](https://github.com/Kenchch/retail-ai-pipeline) use the
-same SHA-256-pinned CSV export of the UCI Online Retail dataset distributed with Databricks' Spark: The Definitive Guide (pinned by SHA-256) but apply different accounting rules:
+same SHA-256-pinned CSV export of the UCI Online Retail dataset distributed with
+Databricks' Spark: The Definitive Guide. **They now agree, to the penny:**
 
-| Bridge | Revenue |
-|---|---:|
-| Python pipeline: valid positive sales | £10,247,353.28 |
-| Exact duplicate invoice lines retained in R, quarantined by Python (5,223 rows; plus 3 PADS lines at £0.001) | +£24,765.59 |
-| R positive sales before credit matching | £10,272,118.87 |
-| Matched sales removed when a later or same-minute credit note reverses them | −£388,459.01 |
-| **This analysis: cancellation-netted sales** | **£9,883,659.86** |
+| Measure | This analysis | retail-ai-pipeline |
+|---|---:|---:|
+| Gross positive product sales | £10,247,353.28 | £10,247,353.28 |
+| Value removed by matched credit notes | £385,958.88 | £385,958.88 |
+| Net of matched cancellations | **£9,861,394.40** | **£9,861,394.40** |
 
-Neither result is presented as a universal definition of revenue. The Python
-pipeline measures accepted positive invoice lines; this analysis estimates net
-sales after matching credit notes. The bridge makes that scope difference
-explicit and reproducible.
+They did not before. This analysis kept exact duplicate invoice lines that the
+Python pipeline quarantines — 5,223 product sale lines worth £24,765.59 — and
+the gap between the two headline figures was exactly those rows. That was
+documented as a scope difference and reconciled in a bridge table, which is
+better than an unexplained gap and worse than not having one: the same file
+does not contain two different amounts of revenue, and a reader had to take on
+trust that the difference was benign rather than a bug in one of them.
+
+The duplicate rule is now the first cleaning rule here, keyed on the same
+tuple the Python side uses, so both projects answer the question the same way.
+
+**The row counts still differ, and that is not a discrepancy.** This analysis
+records 2,769 sales offset by a credit; the Python pipeline records 2,725. The
+44 are service-code lines — postage, fees, adjustments — that a credit note
+cancels here before the service-code rule can remove them. They are not product
+revenue on either side, so they change neither total. `rule_rows()` and the
+audit table make the ordering visible; see
+[the report](analysis.md#cleaning-every-dropped-row-is-accounted-for).
 
 
 Exact matching remains a heuristic: unmatched and partial returns are excluded,
@@ -159,8 +172,9 @@ Rscript R/verify_outputs.R # compare committed summary tables with current code
 
 ## Findings, in one breath
 
-After netting out cancelled sales, 541,909 raw lines become 525,049 clean
-sales lines worth £9.88m. Revenue is flat through the first half of the
+After removing duplicated lines and netting out cancelled sales, 541,909 raw
+lines become 519,844 clean sales lines worth £9.86m. Revenue is flat through
+the first half of the
 year, then climbs from September to a November peak at roughly double the
 mid-year level; it is a weekday (trade) business with no Saturday trading;
 the top ten products earn about 8% of revenue; the UK is ~85% of the
