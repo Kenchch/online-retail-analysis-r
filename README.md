@@ -3,7 +3,11 @@
 [![R CI](https://github.com/Kenchch/online-retail-analysis-r/actions/workflows/ci.yml/badge.svg)](https://github.com/Kenchch/online-retail-analysis-r/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A complete but deliberately small, reproducible data analysis in R.
+What a UK online giftware retailer actually sold in one year, once
+cancellations and duplicate lines are netted out. A deliberately small,
+reproducible analysis in R and SQL: every dropped row is logged with a reason,
+and totals are checked against a SHA-pinned copy of the source, so the numbers
+can be traced.
 
 **Read the analysis here: [analysis.md](analysis.md)** — it renders directly
 on GitHub with all figures and tables.
@@ -194,8 +198,11 @@ invoice counts use different cancellation policies.
 
 ## How this was built
 
-I set the problem, the data contracts and the quality rules, ran the benchmarks
-and reviewed every diff; Claude Code and OpenAI Codex drafted code, refactored
-and scaffolded tests. The full note — including the `Co-Authored-By` trailers
-removed from this repository's history on 6 September 2026 — is on my profile:
-[How I use AI tools](https://github.com/Kenchch/Kenchch#how-i-use-ai-tools).
+I used Claude Code and OpenAI Codex as drafting tools. The problem, the data
+contracts and the quality rules are mine, and so is the review:
+every generated change was read and run before it was committed. The tools
+drafted code, refactored and scaffolded tests.
+
+Commits made before 6 September 2026 carried `Co-Authored-By` trailers naming
+these tools. They were removed when I rewrote that history; most commits since
+then carry them, and each pull request states its own AI involvement.
