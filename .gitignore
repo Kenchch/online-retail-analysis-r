@@ -5,6 +5,9 @@ data/raw/*
 # Local intermediates: the fingerprinted clean-data cache and the SQLite db.
 cache/
 
+# Trace runs (R/trace_pipeline.R): the log, a SQLite db and the tables, per run.
+trace/
+
 # rmarkdown's local HTML preview; the committed report is analysis.md.
 analysis.html
 
