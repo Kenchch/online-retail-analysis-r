@@ -1,5 +1,9 @@
 # Changelog
 
+- 2026-10-24: `R/trace_pipeline.R` runs every step into `trace/<run_id>/` and
+  logs how the data changes shape at each one, then compares its tables with
+  the committed `output/`. No figure changes.
+
 - 2026-09-09: Exact duplicate invoice lines are removed by a new first cleaning
   rule, keyed on the same tuple `retail-ai-pipeline` quarantines. The two
   projects now agree to the penny: gross £10,247,353.28, matched credit value

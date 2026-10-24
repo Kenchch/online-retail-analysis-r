@@ -149,7 +149,15 @@ Rscript R/get_data.R       # fetch + verify the raw data
 Rscript tests/run_tests.R  # unit tests (exit non-zero on failure)
 Rscript run_analysis.R     # clean -> SQL -> output/ tables -> analysis.md
 Rscript R/verify_outputs.R # compare committed summary tables with current code
+Rscript R/trace_pipeline.R # log how the data changes shape at each step
 ```
+
+`R/trace_pipeline.R` runs load, clean, SQLite, the SQL queries and the report's
+R calculations into `trace/<run_id>/`, logs each step's input and output
+(shape, column types, NAs, ranges, sample rows, what changed; the log is
+written in Chinese), then checks that its tables match the committed ones in
+`output/`. It leaves `cache/`, `output/` and `analysis.md` alone and does not
+knit the report.
 
 ## Layout
 
@@ -162,6 +170,7 @@ Rscript R/verify_outputs.R # compare committed summary tables with current code
 ├── R/
 │   ├── functions.R      all shared logic: load, clean, SQL layer, analysis, theme
 │   ├── get_data.R       sha256-verified data fetch
+│   ├── trace_pipeline.R logs how the data changes shape, step by step
 │   └── verify_outputs.R checks the committed tables against the current code
 ├── sql/queries.sql      the SQL, as SQL - named queries parsed and run from R
 ├── tests/               stopifnot()-based unit tests + runner
@@ -171,7 +180,8 @@ Rscript R/verify_outputs.R # compare committed summary tables with current code
 ├── .Rprofile            activates renv on startup, so a session gets the pins
 ├── _dependencies.R      declares svglite, which renv's static scan cannot see
 ├── data/raw/            the downloaded input (gitignored)
-└── cache/               fingerprinted local intermediates (gitignored)
+├── cache/               fingerprinted local intermediates (gitignored)
+└── trace/               one directory per trace run (gitignored)
 ```
 
 ## Findings, in one breath
