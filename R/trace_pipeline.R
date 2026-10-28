@@ -26,7 +26,8 @@ log_line <- function(...) {
   lines <- strsplit(paste0(...), "\n", fixed = TRUE)[[1]]
   if (!length(lines)) lines <- ""
   for (line in lines) {
-    out <- paste0(format(Sys.time(), "%H:%M:%S"), "  ", line)
+    # UTC with the date, like the run id and the other projects' traces.
+    out <- paste0(format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"), "  ", line)
     cat(out, "\n", sep = "")
     writeLines(out, log_con)
   }
@@ -360,6 +361,21 @@ main <- function() {
   log_line("trace run ", run_id, "; 所有输出写在 ", out)
 
   t0 <- proc.time()[["elapsed"]]
+  # A failing step stops the script, and stop() only reaches the console. Log it
+  # first, so trace.log ends with the error under the header of the step that
+  # raised it rather than at the header alone.
+  tryCatch(run_steps(out), error = function(e) {
+    log_line(sprintf("trace 失败, 用时 %.0f s", proc.time()[["elapsed"]] - t0))
+    log_line("  错误: ", conditionMessage(e))
+    call <- conditionCall(e)
+    if (!is.null(call)) log_line("  位置: ", paste(deparse(call), collapse = " "))
+    stop(e)
+  })
+  log_line("")
+  log_line(sprintf("完成, 共 %.0f s; 日志 %s", proc.time()[["elapsed"]] - t0, file.path(out, "trace.log")))
+}
+
+run_steps <- function(out) {
   step_config()
   raw <- step_load()
   cleaned <- step_clean(raw)
@@ -369,8 +385,6 @@ main <- function() {
   step_not_run()
   write_lineage(out)
   compare_with_committed(out)
-  log_line("")
-  log_line(sprintf("完成, 共 %.0f s; 日志 %s", proc.time()[["elapsed"]] - t0, file.path(out, "trace.log")))
 }
 
 main()
