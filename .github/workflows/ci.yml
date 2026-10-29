@@ -83,6 +83,23 @@ jobs:
             exit 1
           }
 
+      # Nothing else runs the trace, so a change that breaks it would otherwise
+      # pass CI. It only reads data/raw and writes under trace/ (ignored), so
+      # it goes after the diff check and cannot affect what that compares. It
+      # logs mismatches rather than failing on them; the diff above is what
+      # fails on those. About 20 s.
+      - name: The pipeline trace runs end to end
+        run: Rscript R/trace_pipeline.R
+
+      - name: Preserve the trace log for review
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: trace-log
+          path: trace/*/trace.log
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Preserve the Linux-rendered report for review
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
