@@ -32,7 +32,7 @@ jobs:
       # produced with, so a CRAN release cannot quietly change the analysis.
       # It also replaces the list that used to be repeated here: the lockfile
       # is now the single place the dependencies are written down.
-      - uses: r-lib/actions/setup-renv@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
+      - uses: r-lib/actions/setup-renv@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
 
       # setup-r-dependencies used to bring pandoc in as a side effect; setup-renv
       # does not, and rmarkdown::render needs it.
