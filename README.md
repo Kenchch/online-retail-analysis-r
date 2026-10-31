@@ -154,8 +154,8 @@ Rscript R/trace_pipeline.R # log how the data changes shape at each step
 
 `R/trace_pipeline.R` runs load, clean, SQLite, the SQL queries and the report's
 R calculations into `trace/<run_id>/`, logs each step's input and output
-(shape, column types, NAs, ranges, sample rows, what changed; the log is
-written in Chinese), then checks that its tables match the committed ones in
+(shape, column types, NAs, ranges, sample rows, what changed), then checks
+that its tables match the committed ones in
 `output/`. It leaves `cache/`, `output/` and `analysis.md` alone and does not
 knit the report.
 
