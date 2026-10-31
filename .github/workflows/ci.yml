@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  # Weekly as well, so a source download or a pinned package that stops
+  # resolving shows up within a week rather than at the next push.
+  schedule:
+    - cron: "17 10 * * 1"
 
 permissions:
   contents: read
