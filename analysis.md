@@ -90,13 +90,19 @@ without knowing what they are worth:
 |:---|:---|---:|
 | Gross positive product sales | £10,247,353.28 | Sales lines only; service codes and non-positive rows removed |
 | Net of matched credit notes (headline) | £9,861,394.40 | 2,769 of 9,251 credit lines matched one-to-one |
-| Net of every product credit note (floor) | £9,771,452.12 | Every product credit subtracted, matched or not |
+| Net of every product credit note (period basis) | £9,771,452.12 | Every product credit subtracted, matched or not |
 
-The floor is a bound, not an alternative headline: it subtracts credits
-for sales made before this window opened, whose matching sale is not in
-the file at all, so it removes value the gross figure never contained.
-The true net sits between the two, and this report does not claim to
-know where.
+These answer different questions; they are not a range with the true
+figure inside it. The last row is the period basis, which is how a
+finance team would report the year: a credit counts against the period
+it was issued in, whichever sale it belongs to. The headline is a
+sale-by-sale view: it removes only the sales this file shows being
+cancelled. Neither bounds what these sales were finally worth. The
+period figure subtracts credits for sales made before the window opened,
+which the gross never contained. Both miss returns issued after 09
+December 2011 against the November peak, and the file cannot say how
+large those were. The two net figures are £89,942.28 apart, 0.9% of
+gross, so the choice between them moves nothing below.
 
 Two caveats worth stating up front:
 
@@ -105,10 +111,13 @@ Two caveats worth stating up front:
   returns of pre-window sales find no match and simply drop out. Revenue
   is therefore net of clean cancellations but still slightly *gross* of
   messy returns.
-- **A quarter of lines have no customer ID** (25.3% of clean lines —
-  guest checkouts). They stay in revenue figures but cannot be used for
-  customer-level analysis, which is therefore based on identified
-  revenue only.
+- **A quarter of lines have no customer ID** (25.3% of clean lines,
+  15.3% of revenue). The file does not say why, and they do not look
+  like small one-off orders: an invoice without an ID averages 96 lines
+  and £1,102, against 21 lines and £457 with one. That is closer to
+  batch or aggregated entry than to individual checkouts. They stay in
+  revenue figures but cannot be used for customer-level analysis, which
+  is therefore based on identified revenue only.
 
 ## Revenue over time (SQL)
 
@@ -187,6 +196,14 @@ Christmas, a 34.4% November jump — and a December bar that only looks
 like a crash because the data stops on the 9th (its `trading_days`
 column in [`output/monthly_growth.csv`](output/monthly_growth.csv) says
 the same to anyone reading the CSV without this caption).
+
+Thirteen months cannot separate season from growth, but the window
+overlaps itself by 9 days, and that is the one like-for-like comparison
+the file allows. 01–09 December took £406k in 2010 and £445k in 2011,
+over 8 trading days each: 9.6% year on year. The business entering
+December 2011 was about a tenth larger than a year earlier, not twice
+the size, so most of the autumn climb is season rather than growth. It
+is one comparison over a few days and carries no more weight than that.
 
 ## The trading week
 
@@ -305,9 +322,9 @@ international sales” off the back of one chart.
 ## Customer concentration
 
 A *repeat* buyer here is a customer who bought on more than one calendar
-day — a same-day flurry of invoices still counts as one visit. Guest
-checkouts cannot be attributed to anyone, so this section covers
-identified revenue only.
+day — a same-day flurry of invoices still counts as one visit. Lines
+with no customer ID cannot be attributed to anyone, so this section
+covers identified revenue only.
 
 ``` r
 knitr::kable(
@@ -340,7 +357,7 @@ ggplot(pareto, aes(customer_pct, revenue_share)) +
     title = "Revenue leans hard on a small core of customers",
     subtitle = "Cumulative share of identified revenue by customer rank (highest-spending first).",
     x = "Customers (ranked by spend)", y = "Cumulative revenue share",
-    caption = "Identified customers only - guest-checkout revenue cannot be attributed."
+    caption = "Identified customers only - revenue with no customer ID cannot be attributed."
   ) +
   theme_retail()
 ```
@@ -348,15 +365,46 @@ ggplot(pareto, aes(customer_pct, revenue_share)) +
 ![](analysis_files/figure-gfm/pareto-1.svg)<!-- -->
 
 Repeat buyers are 64% of identified customers but 92.6% of identified
-revenue, and the top decile alone carries 60%. Losing a handful of key
-accounts would show up directly in the monthly numbers — concentration,
-not volume, is this retailer’s real commercial risk.
+revenue, and the top decile carries 60%. A decile here is 433 customers,
+though, which is a broad base rather than a dependency. The narrower
+figures are the ones that bear on risk: the five largest accounts are
+10.0% of all revenue, the ten largest 13.9%, and the twenty largest
+19.1%. Losing the top five would cost about a tenth of revenue.
+
+The 64% repeat rate understates how often customers come back, because
+the window cuts off those who arrived late:
+
+| First seen | Customers | Came back within the window |
+|:-----------|----------:|:----------------------------|
+| 2010-12    |       883 | 87%                         |
+| 2011-01    |       414 | 81%                         |
+| 2011-02    |       381 | 76%                         |
+| 2011-03    |       451 | 71%                         |
+| 2011-04    |       300 | 66%                         |
+| 2011-05    |       283 | 67%                         |
+| 2011-06    |       242 | 63%                         |
+| 2011-07    |       187 | 58%                         |
+| 2011-08    |       169 | 53%                         |
+| 2011-09    |       296 | 47%                         |
+| 2011-10    |       356 | 32%                         |
+| 2011-11    |       322 | 21%                         |
+| 2011-12    |        40 | 0%                          |
+
+Of the customers first seen in the first three months, 83% ordered
+again; of those first seen in November 2011, 21%, having had at most a
+few weeks to do so. The first row is mixed in a different way: with no
+earlier history, every existing customer who ordered in December 2010
+counts as new that month.
 
 ## A short-horizon forecast, with its caveats attached
 
 ``` r
 weekly <- weekly_revenue(lines)
 fc <- forecast_weekly(weekly, h = 4)
+bt <- backtest_weekly(weekly, h = 4)
+# The same four weeks a year earlier, scaled by the one year-on-year ratio
+# the window allows (the overlap above).
+seasonal <- last_year_weeks(weekly, fc$forecast$week, scale = 1 + yoy_growth)
 
 ggplot() +
   geom_ribbon(
@@ -375,16 +423,21 @@ ggplot() +
     data = fc$forecast, aes(week, mean, colour = "ETS forecast"),
     linewidth = 0.8, linetype = "21"
   ) +
+  geom_line(
+    data = seasonal, aes(week, revenue, colour = "Same weeks of 2010, scaled"),
+    linewidth = 0.8
+  ) +
   scale_colour_manual(
     NULL,
     values = c("All trading weeks" = "#c3c2b7", "Model fit window" = PAL$blue,
-               "ETS forecast" = PAL$orange),
-    breaks = c("All trading weeks", "Model fit window", "ETS forecast")
+               "ETS forecast" = PAL$orange, "Same weeks of 2010, scaled" = PAL$ink2),
+    breaks = c("All trading weeks", "Model fit window", "ETS forecast",
+               "Same weeks of 2010, scaled")
   ) +
   scale_y_continuous(labels = label_gbp) +
   scale_x_date(date_breaks = "2 months", date_labels = "%b %Y") +
   labs(
-    title = "Four weeks ahead: the level holds, the uncertainty is wide",
+    title = "Four weeks ahead: a level forecast, and what last December says instead",
     subtitle = paste0("Weekly revenue with a 4-week ", fc$fit$method,
                       " forecast; bands are 80% / 95% intervals."),
     x = NULL, y = "Weekly revenue",
@@ -408,19 +461,40 @@ ggplot() +
 
 ![](analysis_files/figure-gfm/forecast-1.svg)<!-- -->
 
-Two modelling choices are doing the honest work here. The model is fit
-only on the **unbroken run of weeks after the year-end closure**: `ts()`
-has no notion of a calendar, so handing it the closure week (the grey
-plunge to near zero) or the data window’s truncated edge weeks would
-teach the level a collapse that is really a holiday. And it is
-deliberately **non-seasonal**: with thirteen months of history there is
-exactly one observation of any annual pattern, so a seasonal term would
-be fit to noise. That is also this forecast’s honest limitation — it
-projects the current level, and the *known* story of this business (the
-chart above it) says December falls off a Christmas cliff that a
-one-year series cannot teach a model. In production this would be the
-argument for pooling more history before forecasting, not for a fancier
-model on the same data.
+The model is fit only on the **unbroken run of weeks after the year-end
+closure**: `ts()` has no notion of a calendar, so handing it the closure
+week (the grey plunge to near zero) or the data window’s truncated edge
+weeks would teach the level a collapse that is really a holiday. It is
+also **non-seasonal**: with thirteen months of history there is one
+observation of any annual pattern, so a seasonal term would be fit to
+noise. What comes out is a flat £311k a week.
+
+Two checks on whether that number is worth having.
+
+**Against baselines that need no model.** A rolling backtest inside the
+fit window, four weeks ahead from each of 19 origins:
+
+| Method                      | Mean absolute error, weekly revenue |
+|:----------------------------|:------------------------------------|
+| ETS                         | £45k                                |
+| Last week carried forward   | £47k                                |
+| Mean of the last four weeks | £43k                                |
+
+ETS is within a few thousand pounds of both and does not beat the
+four-week mean. On this series it adds nothing to an average anyone
+could compute by hand.
+
+**Against the calendar.** The four weeks being forecast run from 05
+December to 01 January, and the file holds those weeks from a year
+earlier: £298k, £204k, £85k, £0, the last being the closure. Scaled by
+the 9.6% from the December overlap, that is £644k over the four weeks,
+against £1.24m from ETS.
+
+So the level forecast is usable for an ordinary month and wrong for this
+one, by roughly a factor of 1.9. For December the planning number is the
+scaled 2010 line, and it rests on a single prior year and a single
+growth ratio. More history is what would improve either figure; a more
+elaborate model on the same thirteen months would not.
 
 ## Reproducing this document
 
