@@ -124,7 +124,7 @@ test_sql_roundtrip <- function() {
   stopifnot(nrow(out$monthly_summary) == 1)
   stopifnot(abs(out$monthly_summary$revenue - sum(res$lines$revenue)) < 1e-6)
 
-  # Guest-checkout revenue (missing customer_id) is excluded from the
+  # Unidentified revenue (missing customer_id) is excluded from the
   # customer split, so its revenue must total less than the overall figure.
   stopifnot(sum(out$customer_repeat$revenue) < sum(res$lines$revenue))
 

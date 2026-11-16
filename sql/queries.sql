@@ -8,7 +8,7 @@
 
 -- name: monthly_summary
 -- identified_customers, not "customers": COUNT(DISTINCT customer_id) skips
--- NULLs, and about a quarter of lines are guest checkouts with no id - an
+-- NULLs, and about a quarter of lines carry no customer id - an
 -- unqualified column name would silently overstate what was counted.
 SELECT
     strftime('%Y-%m', invoice_ts)                        AS month,
@@ -73,8 +73,8 @@ ORDER BY revenue DESC
 LIMIT 10;
 
 -- name: customer_repeat
--- Revenue concentration in repeat buyers. Lines without a customer_id (guest
--- checkouts, about a quarter of rows) cannot be attributed and are excluded
+-- Revenue concentration in repeat buyers. Lines without a customer_id (about
+-- a quarter of rows) cannot be attributed and are excluded
 -- here; the denominator is identified revenue only.
 WITH per_customer AS (
     SELECT

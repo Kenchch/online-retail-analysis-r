@@ -65,13 +65,16 @@ One number cannot carry that caveat, so the report states three:
 |---|---:|---|
 | Gross positive product sales | £10,247,353.28 | Sales lines only; service codes and non-positive rows removed |
 | **Net of matched credit notes (headline)** | **£9,861,394.40** | 2,769 of 9,251 credit lines matched one-to-one |
-| Net of every product credit note (floor) | £9,771,452.12 | Every product credit subtracted, matched or not |
+| Net of every product credit note (period basis) | £9,771,452.12 | Every product credit subtracted, matched or not |
 
-The floor is a bound rather than an alternative headline: it subtracts credits
-for sales made before this window opened, whose matching sale is not in the
-file at all, so it removes value the gross figure never contained. The true net
-is somewhere between the two, and neither this README nor the report claims to
-know where. All three are computed in `clean_retail()` and rendered into
+These answer different questions rather than bracketing a true figure. The last
+row is the period basis a finance team would report: a credit counts against
+the period it was issued in, whichever sale it belongs to. The headline is a
+sale-by-sale view that removes only the sales this file shows being cancelled.
+Neither bounds what these sales were finally worth: the period figure subtracts
+credits for sales made before the window opened, and both miss returns issued
+after it closed. The two are £89,942.28 apart, 0.9% of gross. All three are
+computed in `clean_retail()` and rendered into
 [`analysis.md`](analysis.md) from the same values.
 
 ## Reconciliation with retail-ai-pipeline
@@ -190,14 +193,20 @@ After removing duplicated lines and netting out cancelled sales, 541,909 raw
 lines become 519,844 clean sales lines worth £9.86m. Revenue is flat through
 the first half of the
 year, then climbs from September to a November peak at roughly double the
-mid-year level; it is a weekday (trade) business with no Saturday trading;
-the top ten products earn about 8% of revenue; the UK is ~85% of the
-business; repeat buyers are 64% of identified customers but ~93% of
-identified revenue, and the top decile of customers alone carries ~60% —
-concentration, not volume, is the commercial risk. A four-week ETS forecast
-holds the current level, fit only on the unbroken run of trading weeks after
-the year-end closure, with the stated caveat that one year of history cannot
-teach a model the December cliff. Details and charts:
+mid-year level. Most of that climb is season: the one like-for-like comparison
+the window allows, 1–9 December in both years, is up 9.6%. It is a weekday
+(trade) business with no Saturday trading; the top ten products earn about 8%
+of revenue; the UK is ~85% of the business. The five largest accounts are 10.0%
+of all revenue and the twenty largest 19.1%. Repeat buyers are 64% of
+identified customers and ~93% of identified revenue, and 64% understates it:
+83% of customers first seen in the first three months ordered again, against
+21% of those first seen in November, who had only weeks to do so.
+
+The four-week ETS forecast is a flat £311k a week, and the report tests it
+rather than presenting it. In a rolling backtest it does not beat the mean of
+the last four weeks (£45k mean absolute error against £43k). And the four weeks
+it covers are the Christmas run-down: the same weeks of 2010, scaled by the
+9.6%, come to £644k against ETS's £1.24m. Details and charts:
 [analysis.md](analysis.md).
 
 The positive-sale bridge was independently recomputed by

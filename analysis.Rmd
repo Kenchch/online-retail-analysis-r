@@ -107,7 +107,7 @@ tibble(
   Measure = c(
     "Gross positive product sales",
     "Net of matched credit notes (headline)",
-    "Net of every product credit note (floor)"
+    "Net of every product credit note (period basis)"
   ),
   Revenue = label_gbp_exact(
     c(n$gross_value, n$net_of_matched_credits, n$net_of_all_product_credits)
@@ -124,10 +124,28 @@ tibble(
 ) |> knitr::kable(align = "llr")
 ```
 
-The floor is a bound, not an alternative headline: it subtracts credits for
-sales made before this window opened, whose matching sale is not in the file at
-all, so it removes value the gross figure never contained. The true net sits
-between the two, and this report does not claim to know where.
+These answer different questions; they are not a range with the true figure
+inside it. The last row is the period basis, which is how a finance team would
+report the year: a credit counts against the period it was issued in, whichever
+sale it belongs to. The headline is a sale-by-sale view: it removes only the
+sales this file shows being cancelled. Neither bounds what these sales were
+finally worth. The period figure subtracts credits for sales made before the
+window opened, which the gross never contained. Both miss returns issued after
+`r format(span[2], "%d %B %Y")` against the November peak, and the file cannot
+say how large those were. The two net figures are
+`r label_gbp_exact(n$net_of_matched_credits - n$net_of_all_product_credits)`
+apart, `r percent((n$net_of_matched_credits - n$net_of_all_product_credits) / n$gross_value, accuracy = 0.1)`
+of gross, so the choice between them moves nothing below.
+
+```{r unidentified, echo = FALSE}
+by_invoice <- lines |>
+  mutate(identified = !is.na(customer_id)) |>
+  summarise(n_lines = n(), revenue = sum(revenue), .by = c(invoice_no, identified)) |>
+  summarise(lines_per_invoice = mean(n_lines), revenue_per_invoice = mean(revenue),
+            .by = identified)
+unid <- filter(by_invoice, !identified)
+ident <- filter(by_invoice, identified)
+```
 
 Two caveats worth stating up front:
 
@@ -137,10 +155,17 @@ Two caveats worth stating up front:
   therefore net of clean cancellations but still slightly *gross* of messy
   returns.
 - **A quarter of lines have no customer ID**
-  (`r percent(mean(is.na(lines$customer_id)), accuracy = 0.1)` of clean lines
-  — guest checkouts). They stay in revenue figures but cannot be used for
-  customer-level analysis, which is therefore based on identified revenue
-  only.
+  (`r percent(mean(is.na(lines$customer_id)), accuracy = 0.1)` of clean lines,
+  `r percent(sum(lines$revenue[is.na(lines$customer_id)]) / total_revenue, accuracy = 0.1)`
+  of revenue). The file does not say why, and they do not look like small
+  one-off orders: an invoice without an ID averages
+  `r round(unid$lines_per_invoice)` lines and
+  `r paste0("£", comma(round(unid$revenue_per_invoice)))`, against
+  `r round(ident$lines_per_invoice)` lines and
+  `r label_gbp(ident$revenue_per_invoice)` with one. That is closer to batch
+  or aggregated entry than to individual checkouts. They stay in revenue
+  figures but cannot be used for customer-level analysis, which is therefore
+  based on identified revenue only.
 
 ## Revenue over time (SQL)
 
@@ -202,6 +227,24 @@ November jump — and a December bar that only looks like a crash because the
 data stops on the 9th (its `trading_days` column in
 [`output/monthly_growth.csv`](output/monthly_growth.csv) says the same to
 anyone reading the CSV without this caption).
+
+```{r yoy, echo = FALSE}
+yoy <- yoy_overlap(lines)
+stopifnot(yoy$trading_days[1] == yoy$trading_days[2])
+yoy_growth <- yoy$revenue[2] / yoy$revenue[1] - 1
+```
+
+Thirteen months cannot separate season from growth, but the window overlaps
+itself by `r as.integer(yoy$to[1] - yoy$from[1]) + 1` days, and that is the one
+like-for-like comparison the file allows.
+`r format(yoy$from[1], "%d")`–`r format(yoy$to[1], "%d %B")` took
+`r label_gbp(yoy$revenue[1])` in `r format(yoy$from[1], "%Y")` and
+`r label_gbp(yoy$revenue[2])` in `r format(yoy$from[2], "%Y")`, over
+`r yoy$trading_days[1]` trading days each: `r percent(yoy_growth, accuracy = 0.1)`
+year on year. The business entering December 2011 was about a tenth larger than
+a year earlier, not twice the size, so most of the autumn climb is season
+rather than growth. It is one comparison over a few days and carries no more
+weight than that.
 
 ## The trading week
 
@@ -301,9 +344,9 @@ sales" off the back of one chart.
 ## Customer concentration
 
 A *repeat* buyer here is a customer who bought on more than one calendar day
-— a same-day flurry of invoices still counts as one visit. Guest checkouts
-cannot be attributed to anyone, so this section covers identified revenue
-only.
+— a same-day flurry of invoices still counts as one visit. Lines with no
+customer ID cannot be attributed to anyone, so this section covers identified
+revenue only.
 
 ```{r repeat-table}
 knitr::kable(
@@ -331,7 +374,7 @@ ggplot(pareto, aes(customer_pct, revenue_share)) +
     title = "Revenue leans hard on a small core of customers",
     subtitle = "Cumulative share of identified revenue by customer rank (highest-spending first).",
     x = "Customers (ranked by spend)", y = "Cumulative revenue share",
-    caption = "Identified customers only - guest-checkout revenue cannot be attributed."
+    caption = "Identified customers only - revenue with no customer ID cannot be attributed."
   ) +
   theme_retail()
 ```
@@ -339,16 +382,50 @@ ggplot(pareto, aes(customer_pct, revenue_share)) +
 Repeat buyers are `r percent(sql$customer_repeat$customers[sql$customer_repeat$customer_type == "repeat"] / sum(sql$customer_repeat$customers), accuracy = 1)`
 of identified customers but
 `r sql$customer_repeat$revenue_share_pct[sql$customer_repeat$customer_type == "repeat"]`%
-of identified revenue, and the top decile alone carries
-`r percent(top10_share, accuracy = 1)`. Losing a handful of key accounts
-would show up directly in the monthly numbers — concentration, not volume,
-is this retailer's real commercial risk.
+of identified revenue, and the top decile carries
+`r percent(top10_share, accuracy = 1)`. A decile here is
+`r comma(ceiling(nrow(pareto) / 10))` customers, though, which is a broad base
+rather than a dependency. The narrower figures are the ones that bear on risk:
+the five largest accounts are
+`r percent(sum(pareto$revenue[1:5]) / total_revenue, accuracy = 0.1)` of all
+revenue, the ten largest
+`r percent(sum(pareto$revenue[1:10]) / total_revenue, accuracy = 0.1)`, and the
+twenty largest
+`r percent(sum(pareto$revenue[1:20]) / total_revenue, accuracy = 0.1)`. Losing
+the top five would cost about a tenth of revenue.
+
+The `r percent(sql$customer_repeat$customers[sql$customer_repeat$customer_type == "repeat"] / sum(sql$customer_repeat$customers), accuracy = 1)`
+repeat rate understates how often customers come back, because the window cuts
+off those who arrived late:
+
+```{r repeat-cohort, echo = FALSE}
+cohort <- repeat_by_cohort(lines)
+early <- cohort |> filter(first_month <= format(span[1] + months(2), "%Y-%m"))
+late <- cohort |> filter(first_month == format(span[2] - months(1), "%Y-%m"))
+knitr::kable(
+  cohort |> mutate(repeat_share = percent(repeat_share, accuracy = 1)),
+  col.names = c("First seen", "Customers", "Came back within the window"),
+  format.args = list(big.mark = ",")
+)
+```
+
+Of the customers first seen in the first three months,
+`r percent(sum(early$customers * early$repeat_share) / sum(early$customers), accuracy = 1)`
+ordered again; of those first seen in `r format(span[2] - months(1), "%B %Y")`,
+`r percent(late$repeat_share, accuracy = 1)`, having had at most a few weeks to
+do so. The first row is mixed in a different way: with no earlier history,
+every existing customer who ordered in `r format(span[1], "%B %Y")` counts as
+new that month.
 
 ## A short-horizon forecast, with its caveats attached
 
 ```{r forecast, fig.height=4.2}
 weekly <- weekly_revenue(lines)
 fc <- forecast_weekly(weekly, h = 4)
+bt <- backtest_weekly(weekly, h = 4)
+# The same four weeks a year earlier, scaled by the one year-on-year ratio
+# the window allows (the overlap above).
+seasonal <- last_year_weeks(weekly, fc$forecast$week, scale = 1 + yoy_growth)
 
 ggplot() +
   geom_ribbon(
@@ -367,16 +444,21 @@ ggplot() +
     data = fc$forecast, aes(week, mean, colour = "ETS forecast"),
     linewidth = 0.8, linetype = "21"
   ) +
+  geom_line(
+    data = seasonal, aes(week, revenue, colour = "Same weeks of 2010, scaled"),
+    linewidth = 0.8
+  ) +
   scale_colour_manual(
     NULL,
     values = c("All trading weeks" = "#c3c2b7", "Model fit window" = PAL$blue,
-               "ETS forecast" = PAL$orange),
-    breaks = c("All trading weeks", "Model fit window", "ETS forecast")
+               "ETS forecast" = PAL$orange, "Same weeks of 2010, scaled" = PAL$ink2),
+    breaks = c("All trading weeks", "Model fit window", "ETS forecast",
+               "Same weeks of 2010, scaled")
   ) +
   scale_y_continuous(labels = label_gbp) +
   scale_x_date(date_breaks = "2 months", date_labels = "%b %Y") +
   labs(
-    title = "Four weeks ahead: the level holds, the uncertainty is wide",
+    title = "Four weeks ahead: a level forecast, and what last December says instead",
     subtitle = paste0("Weekly revenue with a 4-week ", fc$fit$method,
                       " forecast; bands are 80% / 95% intervals."),
     x = NULL, y = "Weekly revenue",
@@ -398,18 +480,46 @@ ggplot() +
   )
 ```
 
-Two modelling choices are doing the honest work here. The model is fit only
-on the **unbroken run of weeks after the year-end closure**: `ts()` has no
-notion of a calendar, so handing it the closure week (the grey plunge to
-near zero) or the data window's truncated edge weeks would teach the level
-a collapse that is really a holiday. And it is deliberately
-**non-seasonal**: with thirteen months of history there is exactly one
-observation of any annual pattern, so a seasonal term would be fit to
-noise. That is also this forecast's honest limitation — it projects the
-current level, and the *known* story of this business (the chart above it)
-says December falls off a Christmas cliff that a one-year series cannot
-teach a model. In production this would be the argument for pooling more
-history before forecasting, not for a fancier model on the same data.
+The model is fit only on the **unbroken run of weeks after the year-end
+closure**: `ts()` has no notion of a calendar, so handing it the closure week
+(the grey plunge to near zero) or the data window's truncated edge weeks would
+teach the level a collapse that is really a holiday. It is also
+**non-seasonal**: with thirteen months of history there is one observation of
+any annual pattern, so a seasonal term would be fit to noise. What comes out
+is a flat `r label_gbp(fc$forecast$mean[1])` a week.
+
+Two checks on whether that number is worth having.
+
+**Against baselines that need no model.** A rolling backtest inside the fit
+window, four weeks ahead from each of `r bt$origins[1]` origins:
+
+```{r backtest, echo = FALSE}
+knitr::kable(
+  bt |> transmute(method, mae = label_gbp(mae)),
+  col.names = c("Method", "Mean absolute error, weekly revenue")
+)
+```
+
+ETS is within a few thousand pounds of both and does not beat the four-week
+mean. On this series it adds nothing to an average anyone could compute by
+hand.
+
+**Against the calendar.** The four weeks being forecast run from
+`r format(min(fc$forecast$week), "%d %B")` to
+`r format(max(fc$forecast$week) + days(6), "%d %B")`, and the file holds those
+weeks from a year earlier:
+`r paste(label_gbp(seasonal$revenue / (1 + yoy_growth)), collapse = ", ")`, the
+last being the closure. Scaled by the `r percent(yoy_growth, accuracy = 0.1)`
+from the December overlap, that is `r label_gbp(sum(seasonal$revenue))` over
+the four weeks, against `r label_gbp(sum(fc$forecast$mean))` from ETS.
+
+So the level forecast is usable for an ordinary month and wrong for this one,
+by roughly a factor of
+`r format(round(sum(fc$forecast$mean) / sum(seasonal$revenue), 1), nsmall = 1)`.
+For December the planning number is the scaled 2010 line, and it rests on a
+single prior year and a single growth ratio. More history is what would
+improve either figure; a more elaborate model on the same thirteen months
+would not.
 
 ## Reproducing this document
 

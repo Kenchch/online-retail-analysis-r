@@ -149,9 +149,9 @@ clean_retail <- function(raw) {
   n_in <- nrow(d)
 
   # Rule 1: the same line recorded twice. Same invoice, product, quantity,
-  # price and timestamp is one sale keyed twice, not two sales -- an invoice
-  # cannot contain the same product at the same price and quantity at the same
-  # minute as two separate events.
+  # price and timestamp is treated as one sale keyed twice, not two sales.
+  # That is an assumption: an invoice could carry the same product on two
+  # lines on purpose, and the file cannot tell the two cases apart.
   #
   # It runs first, before the credit matching, because a duplicated sale is a
   # second candidate for a credit note to consume. Removing them afterwards
@@ -182,8 +182,8 @@ clean_retail <- function(raw) {
   # 1:1 to a sale line with the same customer, product, quantity and price;
   # process credits in timestamp order and take the latest unused sale at or
   # before each credit. Equal timestamps are eligible because source times
-  # only have minute precision; input row order breaks ties. Guest lines are never
-  # matched - the pairing would be guesswork. Credits with no matching sale
+  # only have minute precision; input row order breaks ties. Lines with no
+  # customer id are never matched - the pairing would be guesswork. Credits with no matching sale
   # (returns of pre-window sales, partial returns) net nothing: they are
   # already dropped, so revenue stays slightly gross of returns.
   d <- d |> mutate(.row = row_number())
@@ -268,10 +268,11 @@ clean_retail <- function(raw) {
     matched_value = gross_value - net_matched,
     net_of_matched_credits = net_matched,
     all_product_credit_value = all_credit_value,
-    # A floor, not an alternative headline. It subtracts every product credit,
-    # including returns of sales made before the window opened, whose matching
-    # sale is not in this file at all -- so it removes value the gross figure
-    # never contained.
+    # The period basis: every product credit issued in the window, whichever
+    # sale it belongs to. That includes returns of sales made before the
+    # window opened, whose matching sale is not in this file, and excludes
+    # returns issued after it closed -- so it is not a bound on what these
+    # sales are finally worth, only a different question from the headline.
     net_of_all_product_credits = gross_value - all_credit_value
   )
   # The identity only, with a tolerance. "Floor at or below headline" also
@@ -413,20 +414,100 @@ customer_pareto <- function(lines) {
     )
 }
 
-#' Four-week-ahead ETS forecast. The model is fit on the unbroken run of
-#' trading weeks AFTER the last year-end closure week: ts() assumes equally
-#' spaced, comparable observations, and feeding it the closure (a near-zero
-#' week) or the window-truncated edge weeks would hand the level estimate a
-#' collapse that never happened. Deliberately non-seasonal too: with 13 months
-#' of history there is at most one observation of any annual effect, so a
-#' seasonal term would be fit to noise. The report says the same thing in
-#' prose - this is an illustration of method, not a number to bank.
-forecast_weekly <- function(weekly, h = 4) {
+#' The one like-for-like year-on-year comparison the window allows: the
+#' calendar days that appear in both years. The data runs a few days past a
+#' full year, so the last days of the window can be set against the first.
+#' Returns one row per year with its revenue and trading days; the caller
+#' checks the trading days agree before quoting a growth rate.
+yoy_overlap <- function(lines) {
+  day <- as_date(lines$invoice_ts)
+  span <- range(day)
+  stopifnot(span[2] >= span[1] + years(1))
+  tibble(
+    from = c(span[1], span[1] + years(1)),
+    to   = c(span[2] - years(1), span[2])
+  ) |>
+    rowwise() |>
+    mutate(
+      revenue      = sum(lines$revenue[day >= from & day <= to]),
+      trading_days = n_distinct(day[day >= from & day <= to])
+    ) |>
+    ungroup()
+}
+
+#' Share of customers who came back, by the month they were first seen. The
+#' overall repeat rate mixes customers who had a year to return with customers
+#' who had a week, so it is only readable next to this.
+repeat_by_cohort <- function(lines) {
+  lines |>
+    filter(!is.na(customer_id)) |>
+    mutate(day = as_date(invoice_ts)) |>
+    summarise(first_day = min(day), active_days = n_distinct(day), .by = customer_id) |>
+    mutate(first_month = format(first_day, "%Y-%m")) |>
+    summarise(
+      customers    = n(),
+      repeat_share = mean(active_days > 1),
+      .by = first_month
+    ) |>
+    arrange(first_month)
+}
+
+#' The weeks the forecast is fit on: the unbroken run of full trading weeks
+#' AFTER the last year-end closure week. ts() assumes equally spaced,
+#' comparable observations, and feeding it the closure (a near-zero week) or
+#' the window-truncated edge weeks would hand the level estimate a collapse
+#' that never happened.
+forecast_fit_run <- function(weekly) {
   usable <- weekly |> filter(!window_partial)
   closures <- usable$week[usable$trading_days <= 1]
   fit_run <- usable |>
     filter(if (length(closures)) week > max(closures) else TRUE)
   stopifnot(all(diff(as.integer(fit_run$week)) == 7))
+  fit_run
+}
+
+#' Rolling-origin backtest of the forecast against two baselines that need no
+#' model: carrying the last week forward, and the mean of the last four weeks.
+#' Each origin fits on the weeks up to it and is scored on the next h. A
+#' forecast that cannot beat these is not adding anything, and the report has
+#' to be able to say which case this is.
+backtest_weekly <- function(weekly, h = 4, min_train = 26) {
+  run <- forecast_fit_run(weekly)$revenue
+  origins <- seq(min_train, length(run) - h)
+  stopifnot(length(origins) > 0)
+  errors <- lapply(origins, function(o) {
+    train <- run[seq_len(o)]
+    actual <- run[o + seq_len(h)]
+    ets_mean <- as.numeric(forecast(ets(ts(train), model = "ZZN"), h = h)$mean)
+    c(
+      ets        = mean(abs(ets_mean - actual)),
+      last_week  = mean(abs(train[o] - actual)),
+      four_weeks = mean(abs(mean(train[(o - 3):o]) - actual))
+    )
+  })
+  mae <- colMeans(do.call(rbind, errors))
+  tibble(
+    method = c("ETS", "Last week carried forward", "Mean of the last four weeks"),
+    mae = unname(mae[c("ets", "last_week", "four_weeks")]),
+    origins = length(origins)
+  )
+}
+
+#' The same weeks one year earlier (364 days, so weekdays line up), scaled.
+#' The only seasonal evidence a 13-month window holds for the weeks being
+#' forecast, and it is one observation.
+last_year_weeks <- function(weekly, weeks, scale = 1) {
+  prior <- weekly[match(weeks - days(364), weekly$week), ]
+  stopifnot(!anyNA(prior$week), !any(prior$window_partial))
+  tibble(week = weeks, revenue = prior$revenue * scale)
+}
+
+#' Four-week-ahead ETS forecast, fit on forecast_fit_run(). Deliberately
+#' non-seasonal: with 13 months of history there is at most one observation
+#' of any annual effect, so a seasonal term would be fit to noise.
+forecast_weekly <- function(weekly, h = 4) {
+  usable <- weekly |> filter(!window_partial)
+  fit_run <- forecast_fit_run(weekly)
   fit <- ets(ts(fit_run$revenue), model = "ZZN")
   fc <- forecast(fit, h = h)
   list(
